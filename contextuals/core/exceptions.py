@@ -1,16 +1,16 @@
-"""Exceptions for the Contextual-CC library."""
+"""Exceptions for the Contextuals library."""
 
-class ContextualCCError(Exception):
-    """Base exception for Contextual-CC library."""
+class ContextualsError(Exception):
+    """Base exception for Contextuals library."""
     pass
 
 
-class APIError(ContextualCCError):
+class APIError(ContextualsError):
     """Error when interacting with external APIs."""
     pass
 
 
-class ConfigurationError(ContextualCCError):
+class ConfigurationError(ContextualsError):
     """Error in configuration."""
     pass
 
@@ -20,16 +20,16 @@ class MissingAPIKeyError(ConfigurationError):
     def __init__(self, service):
         self.service = service
         message = (f"Missing API key for {service}. "
-                  f"Set the CONTEXTUAL_CC_{service.upper()}_API_KEY environment variable "
-                  f"or pass it directly when initializing ContextualCC.")
+                  f"Set the CONTEXTUALS_{service.upper()}_API_KEY environment variable "
+                  f"or pass it directly when initializing Contextuals.")
         super().__init__(message)
 
 
-class NetworkError(ContextualCCError):
+class NetworkError(ContextualsError):
     """Network-related error."""
     pass
 
 
-class FallbackError(ContextualCCError):
+class FallbackError(ContextualsError):
     """Error when all fallback mechanisms fail."""
     pass

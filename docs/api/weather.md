@@ -1,6 +1,6 @@
 # Weather API Reference
 
-This document provides detailed API reference for the weather context module in Contextual-CC.
+This document provides detailed API reference for the weather context module in Contextuals.
 
 ## Table of Contents
 - [WeatherProvider](#weatherprovider)
@@ -20,7 +20,7 @@ WeatherProvider(config: Config, cache: Cache)
 - `config`: Configuration instance
 - `cache`: Cache instance
 
-**Note:** You typically won't instantiate this class directly but access it through the `ContextualCC` interface.
+**Note:** You typically won't instantiate this class directly but access it through the `Contextuals` interface.
 
 ### Methods
 
@@ -49,9 +49,9 @@ Get current weather conditions for a location.
 
 **Example:**
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC(weather_api_key="your_api_key")
+context = Contextuals(weather_api_key="your_api_key")
 weather = context.weather.current(location="London")
 
 print(f"Weather in {weather['location']['name']}:")
@@ -202,7 +202,7 @@ Convert temperature from Celsius to Fahrenheit.
 
 **Example:**
 ```python
-from contextual_cc.weather.utils import celsius_to_fahrenheit
+from contextuals.weather.utils import celsius_to_fahrenheit
 
 temp_f = celsius_to_fahrenheit(20)
 print(f"20°C = {temp_f}°F")  # "20°C = 68.0°F"
@@ -224,7 +224,7 @@ Convert temperature from Fahrenheit to Celsius.
 
 **Example:**
 ```python
-from contextual_cc.weather.utils import fahrenheit_to_celsius
+from contextuals.weather.utils import fahrenheit_to_celsius
 
 temp_c = fahrenheit_to_celsius(68)
 print(f"68°F = {temp_c}°C")  # "68°F = 20.0°C"
@@ -247,7 +247,7 @@ Get comfort level based on temperature and humidity.
 
 **Example:**
 ```python
-from contextual_cc.weather.utils import get_comfort_level
+from contextuals.weather.utils import get_comfort_level
 
 comfort = get_comfort_level(25, 70)
 print(f"Comfort level: {comfort}")  # "Warm and humid"
@@ -270,7 +270,7 @@ Calculate the heat index (feels like temperature) in Celsius.
 
 **Example:**
 ```python
-from contextual_cc.weather.utils import calculate_heat_index
+from contextuals.weather.utils import calculate_heat_index
 
 heat_index = calculate_heat_index(30, 80)
 print(f"Temperature: 30°C, Humidity: 80%")
@@ -293,7 +293,7 @@ Convert wind direction in degrees to cardinal direction text.
 
 **Example:**
 ```python
-from contextual_cc.weather.utils import get_wind_direction_text
+from contextuals.weather.utils import get_wind_direction_text
 
 direction = get_wind_direction_text(45)
 print(f"Wind direction at 45°: {direction}")  # "NE"
@@ -315,7 +315,7 @@ Get a description of UV index value.
 
 **Example:**
 ```python
-from contextual_cc.weather.utils import get_uv_index_description
+from contextuals.weather.utils import get_uv_index_description
 
 description = get_uv_index_description(7)
 print(f"UV index 7: {description}")  # "High"

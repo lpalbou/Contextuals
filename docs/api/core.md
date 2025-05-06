@@ -1,21 +1,21 @@
-# Contextual-CC Core API Reference
+# Contextuals Core API Reference
 
-This document provides detailed API reference for the core components of Contextual-CC.
+This document provides detailed API reference for the core components of Contextuals.
 
 ## Table of Contents
-- [ContextualCC](#contextualcc)
+- [Contextuals](#contextuals)
 - [Config](#config)
 - [Cache](#cache)
 - [Exceptions](#exceptions)
 
-## ContextualCC
+## Contextuals
 
 The main entry point for the library.
 
 ### Constructor
 
 ```python
-ContextualCC(**kwargs)
+Contextuals(**kwargs)
 ```
 
 **Parameters:**
@@ -44,7 +44,7 @@ Update configuration options.
 
 **Example:**
 ```python
-context = ContextualCC()
+context = Contextuals()
 context.update_config(cache_duration=600, use_fallback=False)
 ```
 
@@ -62,7 +62,7 @@ Set API key for a specific service.
 
 **Example:**
 ```python
-context = ContextualCC()
+context = Contextuals()
 context.set_api_key("weather", "your_weather_api_key")
 ```
 
@@ -76,7 +76,7 @@ Clear all cached data.
 
 **Example:**
 ```python
-context = ContextualCC()
+context = Contextuals()
 context.clear_cache()
 ```
 
@@ -248,7 +248,7 @@ Decorator for caching function results.
 
 **Example:**
 ```python
-from contextual_cc.core.cache import cached
+from contextuals.core.cache import cached
 
 @cached(ttl=300)  # Cache for 5 minutes
 def expensive_function(param1, param2):
@@ -258,11 +258,11 @@ def expensive_function(param1, param2):
 
 ## Exceptions
 
-Custom exceptions used in Contextual-CC.
+Custom exceptions used in Contextuals.
 
-### `ContextualCCError`
+### `ContextualsError`
 
-Base exception for all Contextual-CC exceptions.
+Base exception for all Contextuals exceptions.
 
 ### `APIError`
 

@@ -6,10 +6,10 @@ import datetime
 import time
 import json
 
-from contextual_cc.core.config import Config
-from contextual_cc.core.cache import Cache
-from contextual_cc.time.time_provider import TimeProvider
-from contextual_cc.time.utils import (
+from contextuals.core.config import Config
+from contextuals.core.cache import Cache
+from contextuals.time.time_provider import TimeProvider
+from contextuals.time.utils import (
     parse_datetime, get_unix_timestamp, format_duration, get_day_period
 )
 

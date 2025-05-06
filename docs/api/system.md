@@ -29,9 +29,9 @@ Get general information about the operating system and environment.
 
 **Example:**
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC()
+context = Contextuals()
 system_info = context.system.get_system_info()
 
 print(f"OS: {system_info['data']['os']['system']} {system_info['data']['os']['version']}")
@@ -90,9 +90,9 @@ Get information about the current user.
 
 **Example:**
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC()
+context = Contextuals()
 user_info = context.system.get_user_info()
 
 print(f"Username: {user_info['data']['username']}")
@@ -136,9 +136,9 @@ Get detailed information about the local machine's hardware and system configura
 
 **Example:**
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC()
+context = Contextuals()
 machine_info = context.system.get_machine_info()
 
 print(f"Hostname: {machine_info['data']['hostname']}")
@@ -225,9 +225,9 @@ Get information about all users currently logged into the system.
 
 **Example:**
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC()
+context = Contextuals()
 users_info = context.system.get_logged_users()
 
 print(f"Current user: {users_info['data']['current_user']}")
@@ -316,8 +316,8 @@ The System Provider uses caching to minimize resource usage:
 The cache duration can be modified by adjusting the global cache settings when initializing the library:
 
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 # Set a custom cache duration for all providers
-context = ContextualCC(cache_duration=120)  # 2 minutes
+context = Contextuals(cache_duration=120)  # 2 minutes
 ```

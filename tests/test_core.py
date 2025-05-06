@@ -4,9 +4,9 @@ import unittest
 import datetime
 from unittest.mock import patch, MagicMock
 
-from contextual_cc.core.config import Config
-from contextual_cc.core.cache import Cache, cached
-from contextual_cc import ContextualCC
+from contextuals.core.config import Config
+from contextuals.core.cache import Cache, cached
+from contextuals import Contextuals
 
 
 class TestConfig(unittest.TestCase):
@@ -124,12 +124,12 @@ class TestCache(unittest.TestCase):
         self.assertEqual(counter['value'], 2)
 
 
-class TestContextualCC(unittest.TestCase):
-    """Test the ContextualCC class."""
+class TestContextuals(unittest.TestCase):
+    """Test the Contextuals class."""
 
     def test_init(self):
         """Test initialization."""
-        context = ContextualCC()
+        context = Contextuals()
         self.assertIsNotNone(context.config)
         self.assertIsNotNone(context.cache)
         self.assertIsNotNone(context._time)
@@ -144,25 +144,25 @@ class TestContextualCC(unittest.TestCase):
         mock_get.return_value = mock_response
         
         # Now create the context with mocked API
-        context = ContextualCC()
+        context = Contextuals()
         context.update_config(cache_duration=600)
         self.assertEqual(context.config.get("cache_duration"), 600)
 
     def test_set_api_key(self):
         """Test set_api_key method."""
-        context = ContextualCC()
+        context = Contextuals()
         context.set_api_key("weather", "test_key")
         self.assertEqual(context.config.get_api_key("weather"), "test_key")
 
     def test_clear_cache(self):
         """Test clear_cache method."""
-        context = ContextualCC()
+        context = Contextuals()
         # Use a spy on the cache.clear method
         with patch.object(context.cache, 'clear') as mock_clear:
             context.clear_cache()
             mock_clear.assert_called_once()
 
-    @patch('contextual_cc.core.contextual.TimeProvider')
+    @patch('contextuals.core.contextual.TimeProvider')
     def test_time_property(self, MockTimeProvider):
         """Test time property."""
         # Create a mock instance
@@ -170,18 +170,18 @@ class TestContextualCC(unittest.TestCase):
         MockTimeProvider.return_value = mock_time_provider
         
         # Initialize with our mocked TimeProvider
-        context = ContextualCC()
+        context = Contextuals()
         
         # Assert the time property is initialized correctly
         self.assertIsNotNone(context._time)
 
-    @patch('contextual_cc.weather.weather_provider.WeatherProvider')
+    @patch('contextuals.weather.weather_provider.WeatherProvider')
     def test_weather_property(self, MockWeatherProvider):
         """Test weather property."""
         mock_weather_provider = MagicMock()
         MockWeatherProvider.return_value = mock_weather_provider
 
-        context = ContextualCC()
+        context = Contextuals()
         weather_provider = context.weather
         self.assertEqual(weather_provider, mock_weather_provider)
 
@@ -189,7 +189,7 @@ class TestContextualCC(unittest.TestCase):
         """Test that the location property exists."""
         # Simply verify that the property exists, without mocking the import
         # This test is problematic due to the lazy loading mechanism
-        self.assertTrue(hasattr(ContextualCC, 'location'))
+        self.assertTrue(hasattr(Contextuals, 'location'))
 
 
 if __name__ == '__main__':

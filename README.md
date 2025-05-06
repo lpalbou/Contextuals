@@ -1,6 +1,6 @@
-# Contextual-CC
+# Contextuals
 
-Contextual-CC is a Python library designed to provide comprehensive contextual information for AI applications with graceful fallbacks and efficient caching. This library helps ground AI in spatial, temporal, environmental, social/relational, and cultural contexts, with structured, consistent data formats.
+Contextuals is a Python library designed to provide comprehensive contextual information for AI applications with graceful fallbacks and efficient caching. This library helps ground AI in spatial, temporal, environmental, social/relational, and cultural contexts, with structured, consistent data formats.
 
 ## Features
 
@@ -27,15 +27,15 @@ Contextual-CC is a Python library designed to provide comprehensive contextual i
 The recommended way to install the library is using pip:
 
 ```bash
-pip install contextual-cc
+pip install contextuals
 ```
 
 For development purposes, you can install from the GitHub repository:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/contextual-cc.git
-cd contextual-cc
+git clone https://github.com/lpalbou/contextuals.git
+cd contextuals
 
 # Install with Poetry (recommended)
 poetry install
@@ -47,10 +47,10 @@ poetry shell
 ## Quick Start
 
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 # Initialize the library
-context = ContextualCC()
+context = Contextuals()
 
 # Get current time (synced with a time API when possible)
 current_time = context.time.now(format_as_json=True)
@@ -77,7 +77,7 @@ except Exception as e:
 
 ## Setting Up API Keys
 
-Contextual-CC uses multiple APIs under the hood. Some of them require API keys:
+Contextuals uses multiple APIs under the hood. Some of them require API keys:
 
 ### Required API Keys
 
@@ -92,13 +92,13 @@ You can set API keys in three ways:
 
 1. **Environment Variables**:
    ```bash
-   export CONTEXTUAL_CC_WEATHER_API_KEY="your_weather_api_key"
-   export CONTEXTUAL_CC_NEWS_API_KEY="your_news_api_key"
+   export CONTEXTUALS_WEATHER_API_KEY="your_weather_api_key"
+   export CONTEXTUALS_NEWS_API_KEY="your_news_api_key"
    ```
 
 2. **Constructor Parameters**:
    ```python
-   context = ContextualCC(
+   context = Contextuals(
        weather_api_key="your_weather_api_key",
        news_api_key="your_news_api_key"
    )
@@ -106,7 +106,7 @@ You can set API keys in three ways:
 
 3. **After Initialization**:
    ```python
-   context = ContextualCC()
+   context = Contextuals()
    context.set_api_key("weather", "your_weather_api_key")
    context.set_api_key("news", "your_news_api_key")
    ```
@@ -248,78 +248,78 @@ tech_news = context.news.get_country_news(category="technology")
 
 ## CLI Interface
 
-Contextual-CC comes with a convenient command-line interface to quickly access contextual information:
+Contextuals comes with a convenient command-line interface to quickly access contextual information:
 
 ```bash
 # Install with CLI support
-pip install "contextual-cc[cli]"
+pip install "contextuals[cli]"
 
 # Get current time
-contextual time
+contextuals time
 
 # Get current time in Tokyo
-contextual time --timezone Asia/Tokyo
+contextuals time --timezone Asia/Tokyo
 
 # Get current time in JSON format
-contextual time --format json
+contextuals time --format json
 
 # Get weather for your current location (auto-detected)
-contextual weather
+contextuals weather
 
 # Get weather for a specific location
-contextual weather London
+contextuals weather London
 
 # Get detailed weather (UV, visibility, pressure)
-contextual weather --detailed
+contextuals weather --detailed
 
 # Get all weather data (current, air quality, astronomy, forecasts)
-contextual weather --all
+contextuals weather --all
 
 # Get air quality for current location
-contextual air-quality
+contextuals air-quality
 
 # Get air quality for Paris
-contextual air-quality Paris
+contextuals air-quality Paris
 
 # Get astronomy data (sunrise/sunset, moon phases)
-contextual astronomy
+contextuals astronomy
 
 # Get your current location
-contextual location
+contextuals location
 
 # Get information about a specific location
-contextual location "Eiffel Tower"
+contextuals location "Eiffel Tower"
 
 # Get news for your current location (auto-detected)
-contextual news
+contextuals news
 
 # Get world news
-contextual news --world
+contextuals news --world
 
 # Get news for a specific country
-contextual news --country fr  # France
-contextual news --country us  # United States
-contextual news --country gb  # United Kingdom
+contextuals news --country fr  # France
+contextuals news --country us  # United States
+contextuals news --country gb  # United Kingdom
 
 # Get category-specific news
-contextual news --category technology
-contextual news --country de --category business  # German business news
+contextuals news --category technology
+contextuals news --country de --category business  # German business news
 
 # Get news about a specific topic
-contextual news --search "artificial intelligence"
+contextuals news --search "artificial intelligence"
 
 # Show more articles in the results
-contextual news --show 10
+contextuals news --show 10
 
 
 # Get all available contextual information
-contextual all
+contextuals all
 
 # Get all contextual information as JSON
-contextual all --format json
+contextuals all --format json
 
 # Get help
-contextual --help
+contextuals --help
 ```
 
 ## Integration with Other Applications
@@ -327,10 +327,10 @@ contextual --help
 ### Basic Integration
 
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 # Initialize with your API keys
-context = ContextualCC(
+context = Contextuals(
     weather_api_key="your_openweathermap_api_key",
     news_api_key="your_newsapi_key"
 )
@@ -347,10 +347,10 @@ news_info = context.news.get_country_news("gb")
 ```python
 # Flask example
 from flask import Flask, jsonify
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 app = Flask(__name__)
-context = ContextualCC()
+context = Contextuals()
 
 @app.route('/api/time')
 def get_time():
@@ -369,10 +369,10 @@ def get_news():
 
 ```python
 import openai
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 # Initialize context provider
-context = ContextualCC()
+context = Contextuals()
 
 # Get enriched context
 time_info = context.time.now(format_as_json=True)
@@ -403,7 +403,7 @@ response = openai.ChatCompletion.create(
 
 ## Error Handling and Fallbacks
 
-Contextual-CC is designed with robust error handling and fallbacks:
+Contextuals is designed with robust error handling and fallbacks:
 
 ```python
 try:

@@ -1,4 +1,4 @@
-"""Command-line interface for Contextual-CC."""
+"""Command-line interface for Contextuals."""
 
 import argparse
 import datetime
@@ -6,7 +6,7 @@ import json
 import sys
 from typing import Dict, Any, Optional
 
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 
 def format_output(data: Dict[str, Any], format_type: str = "pretty") -> str:
@@ -348,12 +348,12 @@ def _pretty_format(data: Dict[str, Any]) -> str:
     return "\n".join(output)
 
 
-def time_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def time_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle time command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Time data
@@ -361,12 +361,12 @@ def time_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, A
     return context.time.now(format_as_json=True, timezone=args.timezone)
 
 
-def weather_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def weather_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle weather command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Weather data
@@ -382,12 +382,12 @@ def weather_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str
         return context.weather.current(location)
 
 
-def air_quality_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def air_quality_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle air quality command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Air quality data
@@ -397,12 +397,12 @@ def air_quality_command(args: argparse.Namespace, context: ContextualCC) -> Dict
     return context.weather.get_air_quality(location)
 
 
-def astronomy_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def astronomy_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle astronomy command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Astronomy data
@@ -412,12 +412,12 @@ def astronomy_command(args: argparse.Namespace, context: ContextualCC) -> Dict[s
     return context.weather.get_astronomy(location)
 
 
-def all_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def all_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle all command - get all contextual information.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         All context data
@@ -425,12 +425,12 @@ def all_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, An
     return context.get_all_context()
 
 
-def system_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def system_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle system command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         System data
@@ -438,12 +438,12 @@ def system_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str,
     return context.system.get_system_info()
 
 
-def user_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def user_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle user command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         User data
@@ -451,12 +451,12 @@ def user_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, A
     return context.system.get_user_info()
 
 
-def who_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def who_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle who command - get information about users logged into the system.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Logged users data
@@ -464,12 +464,12 @@ def who_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, An
     return context.system.get_logged_users()
 
 
-def machine_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def machine_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle machine command - get information about the local machine.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Machine data
@@ -477,12 +477,12 @@ def machine_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str
     return context.system.get_machine_info()
 
 
-def location_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def location_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle location command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Location data
@@ -505,12 +505,12 @@ def location_command(args: argparse.Namespace, context: ContextualCC) -> Dict[st
             }
 
 
-def news_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, Any]:
+def news_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle news command.
     
     Args:
         args: Command arguments
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         News data
@@ -532,47 +532,11 @@ def news_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, A
             country_code = args.country.lower()
             result = context.news.get_country_news(country=country_code, category=args.category, page_size=args.limit)
         
-        # No source specified - get news for current location
+        # No source specified - always use world news by default
         else:
-            # Determine current country code from location
-            try:
-                location = context.location.get_current_location()
-                country_code = None
-                
-                if location and "data" in location:
-                    address = location["data"].get("address", {})
-                    # Try different fields where country code might be found
-                    country_code = (address.get("country_code") or 
-                                   address.get("countryCode") or 
-                                   address.get("country"))
-                    
-                    if country_code and len(country_code) > 2:
-                        # If we got a full country name, convert to ISO code
-                        # This is a very simplified mapping - in a real app, use a complete country code database
-                        country_map = {
-                            "france": "fr", "usa": "us", "united states": "us", "uk": "gb", 
-                            "united kingdom": "gb", "germany": "de", "italy": "it", "spain": "es",
-                            "russia": "ru", "china": "cn", "japan": "jp", "india": "in", 
-                            "brazil": "br", "canada": "ca", "australia": "au"
-                        }
-                        country_code = country_map.get(country_code.lower(), country_code[:2].lower())
-                    
-                    if country_code:
-                        country_code = country_code.lower()
-                
-                if country_code:
-                    # Use the detected country
-                    print(f"Getting news for detected country: {country_code}", file=sys.stderr)
-                    result = context.news.get_country_news(country=country_code, category=args.category, page_size=args.limit)
-                else:
-                    # Fallback to world news if country detection fails
-                    print("Could not determine your country. Showing world news instead.", file=sys.stderr)
-                    result = context.news.get_world_news(category=args.category, page_size=args.limit)
-            
-            except Exception as e:
-                # Fallback to world news if there's any error
-                print(f"Error determining country: {e}. Showing world news instead.", file=sys.stderr)
-                result = context.news.get_world_news(category=args.category, page_size=args.limit)
+            # Always use world news by default
+            print("Showing world news by default.", file=sys.stderr)
+            result = context.news.get_world_news(category=args.category, page_size=args.limit)
         
         # Add the show parameter to the result
         if result and "parameters" in result:
@@ -586,7 +550,7 @@ def news_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, A
         # Handle missing API key or other errors
         error_message = str(e)
         if "MissingAPIKeyError" in error_message or "news" in error_message.lower() and "api key" in error_message.lower():
-            print("Warning: News API key not found. Please set CONTEXTUAL_CC_NEWS_API_KEY environment variable.", file=sys.stderr)
+            print("Warning: News API key not found. Please set CONTEXTUALS_NEWS_API_KEY environment variable.", file=sys.stderr)
         else:
             print(f"Error retrieving news: {error_message}", file=sys.stderr)
             
@@ -604,11 +568,11 @@ def news_command(args: argparse.Namespace, context: ContextualCC) -> Dict[str, A
         }
 
 
-def get_current_location(context: ContextualCC) -> str:
+def get_current_location(context: Contextuals) -> str:
     """Get current location using system IP address.
     
     Args:
-        context: ContextualCC instance
+        context: Contextuals instance
         
     Returns:
         Current location name or default location
@@ -733,8 +697,8 @@ def main() -> None:
         parser.print_help()
         sys.exit(1)
     
-    # Initialize ContextualCC
-    context = ContextualCC()
+    # Initialize Contextuals
+    context = Contextuals()
     
     # Execute appropriate command
     try:

@@ -1,4 +1,4 @@
-"""System provider for Contextual-CC."""
+"""System provider for Contextuals."""
 
 import os
 import sys
@@ -10,8 +10,8 @@ import datetime
 import subprocess
 from typing import Dict, Any, Optional
 
-from contextual_cc.core.cache import Cache, cached
-from contextual_cc.core.config import Config
+from contextuals.core.cache import Cache, cached
+from contextuals.core.config import Config
 
 
 class SystemProvider:

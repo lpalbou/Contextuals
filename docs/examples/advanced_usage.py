@@ -1,9 +1,9 @@
-"""Advanced usage examples for Contextual-CC."""
+"""Advanced usage examples for Contextuals."""
 
 import os
 import time
-from contextual_cc import ContextualCC
-from contextual_cc.core.exceptions import (
+from contextuals import Contextuals
+from contextuals.core.exceptions import (
     APIError, NetworkError, MissingAPIKeyError, FallbackError
 )
 
@@ -12,7 +12,7 @@ def custom_configuration():
     print("===== CUSTOM CONFIGURATION =====")
     
     # Initialize with custom configuration
-    context = ContextualCC(
+    context = Contextuals(
         # Cache settings
         cache_duration=600,  # 10 minutes
         
@@ -39,12 +39,12 @@ def api_key_management():
     print("\n===== API KEY MANAGEMENT =====")
     
     # Method 1: Environment variables (set before running this script)
-    # export CONTEXTUAL_CC_WEATHER_API_KEY="your_api_key"
-    env_key = os.environ.get("CONTEXTUAL_CC_WEATHER_API_KEY")
+    # export CONTEXTUALS_WEATHER_API_KEY="your_api_key"
+    env_key = os.environ.get("CONTEXTUALS_WEATHER_API_KEY")
     print(f"Weather API key from environment: {'Set' if env_key else 'Not set'}")
     
     # Method 2: Constructor parameters
-    context = ContextualCC(
+    context = Contextuals(
         weather_api_key="constructor_example_key"
     )
     print("Set weather API key via constructor")
@@ -60,7 +60,7 @@ def error_handling():
     print("\n===== ERROR HANDLING =====")
     
     # Initialize without API keys to demonstrate error handling
-    context = ContextualCC(use_fallback=False)  # Disable fallbacks to force errors
+    context = Contextuals(use_fallback=False)  # Disable fallbacks to force errors
     
     # Try to get weather information without an API key
     try:
@@ -78,7 +78,7 @@ def error_handling():
         print(f"Other error: {e}")
     
     # Try with fallbacks enabled
-    context = ContextualCC(use_fallback=True)
+    context = Contextuals(use_fallback=True)
     print("\nWith fallbacks enabled:")
     
     try:
@@ -94,7 +94,7 @@ def caching_demonstration():
     """Demonstrate caching behavior."""
     print("\n===== CACHING DEMONSTRATION =====")
     
-    context = ContextualCC(cache_duration=10)  # Short cache for demonstration
+    context = Contextuals(cache_duration=10)  # Short cache for demonstration
     
     # First request will go to the API
     print("Making first request...")
@@ -139,7 +139,7 @@ def advanced_time_features():
     """Demonstrate advanced time features."""
     print("\n===== ADVANCED TIME FEATURES =====")
     
-    context = ContextualCC()
+    context = Contextuals()
     
     # Force sync with time API
     success = context.time.force_sync()
@@ -160,7 +160,7 @@ def advanced_time_features():
         print(f"Could not get timezone info: {e}")
     
     # Use utility functions
-    from contextual_cc.time.utils import get_day_period, format_duration
+    from contextuals.time.utils import get_day_period, format_duration
     
     now = context.time.now()
     period = get_day_period(now)
@@ -176,12 +176,12 @@ def advanced_weather_features():
     print("\n===== ADVANCED WEATHER FEATURES =====")
     
     # Check if we have a weather API key
-    api_key = os.environ.get("CONTEXTUAL_CC_WEATHER_API_KEY")
+    api_key = os.environ.get("CONTEXTUALS_WEATHER_API_KEY")
     if not api_key:
         print("Weather API key not set. Skipping advanced weather examples.")
         return None
     
-    context = ContextualCC()
+    context = Contextuals()
     
     try:
         # Get a weather forecast
@@ -210,7 +210,7 @@ def advanced_weather_features():
         print(f"\nWeather condition interpretation: {description}")
         
         # Use utility functions
-        from contextual_cc.weather.utils import (
+        from contextuals.weather.utils import (
             get_comfort_level, calculate_heat_index, get_uv_index_description
         )
         
@@ -236,7 +236,7 @@ def advanced_location_features():
     """Demonstrate advanced location features."""
     print("\n===== ADVANCED LOCATION FEATURES =====")
     
-    context = ContextualCC()
+    context = Contextuals()
     
     try:
         # Get timezone for coordinates
@@ -255,7 +255,7 @@ def advanced_location_features():
             print(f"- {place['name']} ({place['distance']:.2f} km)")
         
         # Use utility functions
-        from contextual_cc.location.utils import (
+        from contextuals.location.utils import (
             parse_coordinates, format_coordinates, get_cardinal_direction
         )
         

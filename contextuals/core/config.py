@@ -1,4 +1,4 @@
-"""Configuration management for Contextual-CC."""
+"""Configuration management for Contextuals."""
 
 import os
 from typing import Dict, Any, Optional
@@ -8,7 +8,7 @@ import dotenv
 dotenv.load_dotenv()
 
 class Config:
-    """Configuration management for Contextual-CC.
+    """Configuration management for Contextuals.
     
     Handles API keys, cache settings, and other configuration options.
     """
@@ -38,9 +38,9 @@ class Config:
     
     # Environment variable names for API keys
     ENV_VAR_MAPPING = {
-        "weather_api_key": "CONTEXTUAL_CC_WEATHER_API_KEY",
-        "location_api_key": "CONTEXTUAL_CC_LOCATION_API_KEY",
-        "news_api_key": "CONTEXTUAL_CC_NEWS_API_KEY",
+        "weather_api_key": "CONTEXTUALS_WEATHER_API_KEY",
+        "location_api_key": "CONTEXTUALS_LOCATION_API_KEY",
+        "news_api_key": "CONTEXTUALS_NEWS_API_KEY",
     }
     
     def __init__(self, **kwargs):

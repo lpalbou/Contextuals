@@ -1,13 +1,13 @@
-# Contextual-CC Command-Line Interface
+# Contextuals Command-Line Interface
 
-Contextual-CC provides a convenient command-line interface (CLI) for quickly accessing contextual information without writing code.
+Contextuals provides a convenient command-line interface (CLI) for quickly accessing contextual information without writing code.
 
 ## Installation
 
-To install Contextual-CC with CLI support:
+To install Contextuals with CLI support:
 
 ```bash
-pip install "contextual-cc[cli]"
+pip install "contextuals[cli]"
 ```
 
 ## Basic Usage
@@ -15,7 +15,7 @@ pip install "contextual-cc[cli]"
 The basic syntax for the CLI is:
 
 ```bash
-contextual [OPTIONS] COMMAND [ARGS]
+contextuals [OPTIONS] COMMAND [ARGS]
 ```
 
 ### Global Options
@@ -24,6 +24,7 @@ contextual [OPTIONS] COMMAND [ARGS]
 
 ### Available Commands
 
+- `all` - Get all contextual information at once
 - `time` - Get current time information
 - `weather` - Get weather information for a location
 - `air-quality` - Get air quality information for a location
@@ -33,12 +34,32 @@ contextual [OPTIONS] COMMAND [ARGS]
 
 ## Command Reference
 
+### All Command
+
+Get all contextual information at once.
+
+```bash
+contextuals all [--format FORMAT]
+```
+
+Options:
+- `--format FORMAT` - Output format (pretty, json, compact)
+
+Examples:
+```bash
+# Get all contextual information in pretty format
+contextuals all
+
+# Get all contextual information as JSON
+contextuals all --format json
+```
+
 ### Time Command
 
 Get current time information, optionally in a specific timezone.
 
 ```bash
-contextual time [--timezone TIMEZONE]
+contextuals time [--timezone TIMEZONE]
 ```
 
 Options:
@@ -47,13 +68,13 @@ Options:
 Examples:
 ```bash
 # Get current time in local timezone
-contextual time
+contextuals time
 
 # Get current time in Tokyo
-contextual time --timezone Asia/Tokyo
+contextuals time --timezone Asia/Tokyo
 
 # Get time as JSON
-contextual time --format json
+contextuals time --format json
 ```
 
 ### Weather Command
@@ -61,7 +82,7 @@ contextual time --format json
 Get weather information for a location.
 
 ```bash
-contextual weather [LOCATION] [--detailed] [--all] [--format FORMAT]
+contextuals weather [LOCATION] [--detailed] [--all] [--format FORMAT]
 ```
 
 Arguments:
@@ -75,19 +96,19 @@ Options:
 Examples:
 ```bash
 # Get basic weather information for your current location
-contextual weather
+contextuals weather
 
 # Get basic weather information for London
-contextual weather London
+contextuals weather London
 
 # Get detailed weather information for Paris
-contextual weather Paris --detailed
+contextuals weather Paris --detailed
 
 # Get all weather information for Tokyo
-contextual weather Tokyo --all
+contextuals weather Tokyo --all
 
 # Get weather as JSON
-contextual weather London --format json
+contextuals weather London --format json
 ```
 
 ### Air Quality Command
@@ -95,7 +116,7 @@ contextual weather London --format json
 Get air quality information for a location.
 
 ```bash
-contextual air-quality [LOCATION] [--format FORMAT]
+contextuals air-quality [LOCATION] [--format FORMAT]
 ```
 
 Arguments:
@@ -107,13 +128,13 @@ Options:
 Examples:
 ```bash
 # Get air quality for your current location
-contextual air-quality
+contextuals air-quality
 
 # Get air quality for Beijing
-contextual air-quality Beijing
+contextuals air-quality Beijing
 
 # Get air quality as compact JSON
-contextual air-quality London --format compact
+contextuals air-quality London --format compact
 ```
 
 ### Astronomy Command
@@ -121,7 +142,7 @@ contextual air-quality London --format compact
 Get astronomy data (sunrise, sunset, moon phases) for a location.
 
 ```bash
-contextual astronomy [LOCATION] [--format FORMAT]
+contextuals astronomy [LOCATION] [--format FORMAT]
 ```
 
 Arguments:
@@ -133,13 +154,13 @@ Options:
 Examples:
 ```bash
 # Get astronomy data for your current location
-contextual astronomy
+contextuals astronomy
 
 # Get astronomy data for Sydney
-contextual astronomy Sydney
+contextuals astronomy Sydney
 
 # Get astronomy data as JSON
-contextual astronomy London --format json
+contextuals astronomy London --format json
 ```
 
 ### Location Command
@@ -147,7 +168,7 @@ contextual astronomy London --format json
 Get information about a location.
 
 ```bash
-contextual location [QUERY] [--format FORMAT]
+contextuals location [QUERY] [--format FORMAT]
 ```
 
 Arguments:
@@ -159,13 +180,13 @@ Options:
 Examples:
 ```bash
 # Get your current location information
-contextual location
+contextuals location
 
 # Get information about the Eiffel Tower
-contextual location "Eiffel Tower"
+contextuals location "Eiffel Tower"
 
 # Get location information as JSON
-contextual location "Grand Canyon" --format json
+contextuals location "Grand Canyon" --format json
 ```
 
 ### News Command
@@ -173,7 +194,7 @@ contextual location "Grand Canyon" --format json
 Get news headlines and articles.
 
 ```bash
-contextual news [--world | --country COUNTRY] [--category CATEGORY] [--search SEARCH] [--limit LIMIT] [--show SHOW] [--format FORMAT]
+contextuals news [--world | --country COUNTRY] [--category CATEGORY] [--search SEARCH] [--limit LIMIT] [--show SHOW] [--format FORMAT]
 ```
 
 Options:
@@ -186,9 +207,9 @@ Options:
 - `--format FORMAT` - Output format (pretty, json, compact)
 
 **Notes**:
-- If no source option is provided, news for your current location (auto-detected) will be shown
-- If auto-detection fails, world news will be shown as a fallback
+- If no source option is provided, world news will be shown by default
 - The `--search` option takes precedence over country/world options
+- The `--country` option allows getting country-specific news
 
 **Country Codes**:
 - `us` - United States
@@ -207,29 +228,29 @@ Options:
 
 Examples:
 ```bash
-# Get news for your current location (auto-detected)
-contextual news
+# Get world news (default)
+contextuals news
 
 # Get world news
-contextual news --world
+contextuals news --world
 
 # Get news for France
-contextual news --country fr
+contextuals news --country fr
 
 # Get technology news for your current location
-contextual news --category technology
+contextuals news --category technology
 
 # Get business news from Germany
-contextual news --country de --category business
+contextuals news --country de --category business
 
 # Get news about climate change
-contextual news --search "climate change"
+contextuals news --search "climate change"
 
 # Show 10 articles in the results
-contextual news --show 10
+contextuals news --show 10
 
 # Get 15 articles about AI in JSON format
-contextual news --search "artificial intelligence" --limit 15 --format json
+contextuals news --search "artificial intelligence" --limit 15 --format json
 ```
 
 
@@ -244,27 +265,27 @@ The CLI supports three output formats:
 Example:
 ```bash
 # Get weather in pretty format (default)
-contextual weather London
+contextuals weather London
 
 # Get weather as formatted JSON
-contextual weather London --format json
+contextuals weather London --format json
 
 # Get weather as compact JSON (useful for piping to other tools)
-contextual weather London --format compact
+contextuals weather London --format compact
 ```
 
 ## Environment Variables
 
 The CLI uses the same environment variables as the library:
 
-- `CONTEXTUAL_CC_WEATHER_API_KEY` - OpenWeatherMap API key
-- `CONTEXTUAL_CC_NEWS_API_KEY` - NewsAPI key
+- `CONTEXTUALS_WEATHER_API_KEY` - API key for weather information
+- `CONTEXTUALS_NEWS_API_KEY` - API key for news information
 
 These can be set in your shell environment before running the CLI:
 
 ```bash
-export CONTEXTUAL_CC_WEATHER_API_KEY="your_openweathermap_api_key"
-export CONTEXTUAL_CC_NEWS_API_KEY="your_newsapi_key"
+export CONTEXTUALS_WEATHER_API_KEY="your_weather_api_key"
+export CONTEXTUALS_NEWS_API_KEY="your_news_api_key"
 ```
 
 ## Piping and Scripting
@@ -273,10 +294,10 @@ The CLI is designed to work well with other command-line tools:
 
 ```bash
 # Pipe weather data to jq for filtering
-contextual weather London --format json | jq '.data.temp_c'
+contextuals weather London --format json | jq '.data.temp_c'
 
 # Use in a shell script
-if [ $(contextual weather London --format compact | jq -r '.data.condition.text') == "Rain" ]; then
+if [ $(contextuals weather London --format compact | jq -r '.data.condition.text') == "Rain" ]; then
     echo "Remember to take an umbrella!"
 fi
 ```
@@ -287,7 +308,7 @@ When an error occurs, the CLI will print an error message to stderr and exit wit
 
 ```bash
 # Example of handling errors in a shell script
-if ! contextual weather London; then
+if ! contextuals weather London; then
     echo "Could not get weather data, using default settings"
 fi
 ```

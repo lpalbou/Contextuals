@@ -3,11 +3,11 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from contextual_cc.core.config import Config
-from contextual_cc.core.cache import Cache
-from contextual_cc.core.exceptions import MissingAPIKeyError, APIError
-from contextual_cc.weather.weather_provider import WeatherProvider
-from contextual_cc.weather.utils import (
+from contextuals.core.config import Config
+from contextuals.core.cache import Cache
+from contextuals.core.exceptions import MissingAPIKeyError, APIError
+from contextuals.weather.weather_provider import WeatherProvider
+from contextuals.weather.utils import (
     celsius_to_fahrenheit, fahrenheit_to_celsius, 
     get_comfort_level, calculate_heat_index,
     get_wind_direction_text, get_uv_index_description
@@ -28,7 +28,7 @@ class TestWeatherProvider(unittest.TestCase):
         self.assertEqual(self.weather_provider.config, self.config)
         self.assertEqual(self.weather_provider.cache, self.cache)
 
-    @patch('contextual_cc.core.config.Config.get_api_key')
+    @patch('contextuals.core.config.Config.get_api_key')
     def test_get_api_key(self, mock_get_api_key):
         """Test the _get_api_key method."""
         # Test when API key is available

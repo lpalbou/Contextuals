@@ -1,6 +1,6 @@
 # Time API Reference
 
-This document provides detailed API reference for the time context module in Contextual-CC.
+This document provides detailed API reference for the time context module in Contextuals.
 
 ## Table of Contents
 - [TimeProvider](#timeprovider)
@@ -20,7 +20,7 @@ TimeProvider(config: Config, cache: Cache)
 - `config`: Configuration instance
 - `cache`: Cache instance
 
-**Note:** You typically won't instantiate this class directly but access it through the `ContextualCC` interface.
+**Note:** You typically won't instantiate this class directly but access it through the `Contextuals` interface.
 
 ### Methods
 
@@ -43,9 +43,9 @@ Get the current time, using the synchronized offset when available.
 
 **Example:**
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC()
+context = Contextuals()
 # Get current time in UTC
 now_utc = context.time.now()
 # Get current time in New York
@@ -168,7 +168,7 @@ Parse a string into a datetime object. Supports various common formats.
 
 **Example:**
 ```python
-from contextual_cc.time.utils import parse_datetime
+from contextuals.time.utils import parse_datetime
 
 dt = parse_datetime("2023-01-01T12:00:00Z")
 print(f"Parsed datetime: {dt}")
@@ -190,7 +190,7 @@ Convert a datetime to a Unix timestamp.
 
 **Example:**
 ```python
-from contextual_cc.time.utils import get_unix_timestamp
+from contextuals.time.utils import get_unix_timestamp
 from datetime import datetime
 
 # Get timestamp for now
@@ -219,7 +219,7 @@ Format a duration in seconds to a human-readable string.
 
 **Example:**
 ```python
-from contextual_cc.time.utils import format_duration
+from contextuals.time.utils import format_duration
 
 duration = format_duration(3665)  # 1 hour, 1 minute, 5 seconds
 print(f"Duration: {duration}")  # "1 hours, 1 minutes"
@@ -241,7 +241,7 @@ Get the period of the day (morning, afternoon, evening, night).
 
 **Example:**
 ```python
-from contextual_cc.time.utils import get_day_period
+from contextuals.time.utils import get_day_period
 from datetime import datetime
 
 # Get current period of the day

@@ -4,9 +4,9 @@ import os
 import pytest
 from unittest.mock import MagicMock
 
-from contextual_cc.core.config import Config
-from contextual_cc.core.cache import Cache
-from contextual_cc import ContextualCC
+from contextuals.core.config import Config
+from contextuals.core.cache import Cache
+from contextuals import Contextuals
 
 
 def get_api_key(service_name):
@@ -18,7 +18,7 @@ def get_api_key(service_name):
     Returns:
         The API key if available, None otherwise.
     """
-    env_var_name = f"CONTEXTUAL_CC_{service_name.upper()}_API_KEY"
+    env_var_name = f"CONTEXTUALS_{service_name.upper()}_API_KEY"
     return os.environ.get(env_var_name)
 
 
@@ -31,14 +31,14 @@ def requires_api_key(service_name):
     key = get_api_key(service_name)
     return pytest.mark.skipif(
         key is None,
-        reason=f"No API key available for {service_name}. Set CONTEXTUAL_CC_{service_name.upper()}_API_KEY environment variable."
+        reason=f"No API key available for {service_name}. Set CONTEXTUALS_{service_name.upper()}_API_KEY environment variable."
     )
 
 
 @pytest.fixture
-def contextual_cc():
-    """Create a ContextualCC instance for testing."""
-    return ContextualCC()
+def contextuals():
+    """Create a Contextuals instance for testing."""
+    return Contextuals()
 
 
 @pytest.fixture
@@ -56,15 +56,15 @@ def cache():
 @pytest.fixture(scope="session")
 def real_time_provider():
     """Create a real TimeProvider instance for testing."""
-    context = ContextualCC()
+    context = Contextuals()
     return context.time
 
 
 @pytest.fixture(scope="session")
 def real_weather_provider():
     """Create a real WeatherProvider instance for testing.
-    Only used when CONTEXTUAL_CC_WEATHER_API_KEY is available."""
-    context = ContextualCC()
+    Only used when CONTEXTUALS_WEATHER_API_KEY is available."""
+    context = Contextuals()
     if get_api_key("weather") is not None:
         return context.weather
     return None
@@ -73,15 +73,15 @@ def real_weather_provider():
 @pytest.fixture(scope="session")
 def real_location_provider():
     """Create a real LocationProvider instance for testing."""
-    context = ContextualCC()
+    context = Contextuals()
     return context.location
 
 
 @pytest.fixture(scope="session")
 def real_news_provider():
     """Create a real NewsProvider instance for testing.
-    Only used when CONTEXTUAL_CC_NEWS_API_KEY is available."""
-    context = ContextualCC()
+    Only used when CONTEXTUALS_NEWS_API_KEY is available."""
+    context = Contextuals()
     if get_api_key("news") is not None:
         return context.news
     return None

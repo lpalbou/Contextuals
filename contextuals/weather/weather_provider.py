@@ -1,4 +1,4 @@
-"""Weather provider for Contextual-CC."""
+"""Weather provider for Contextuals."""
 
 import json
 import time
@@ -6,9 +6,9 @@ import datetime
 from typing import Dict, Any, Optional, List, Union
 import requests
 
-from contextual_cc.core.cache import Cache, cached
-from contextual_cc.core.config import Config
-from contextual_cc.core.exceptions import APIError, NetworkError, MissingAPIKeyError
+from contextuals.core.cache import Cache, cached
+from contextuals.core.config import Config
+from contextuals.core.exceptions import APIError, NetworkError, MissingAPIKeyError
 
 
 class WeatherProvider:
@@ -493,7 +493,7 @@ class WeatherProvider:
             
         # If we couldn't get coordinates from weather API, try location provider
         try:
-            from contextual_cc.location.location_provider import LocationProvider
+            from contextuals.location.location_provider import LocationProvider
             location_provider = LocationProvider(self.config, self.cache)
             location_data = location_provider.get(location)
             coords = location_data.get("coordinates", {})

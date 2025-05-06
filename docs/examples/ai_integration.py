@@ -1,14 +1,14 @@
-"""Example of AI integration with Contextual-CC."""
+"""Example of AI integration with Contextuals."""
 
 import os
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 def main():
     """Demonstrate how to integrate contextual information with AI models."""
     print("=== AI Integration Example ===\n")
     
     # Initialize context provider
-    context = ContextualCC()
+    context = Contextuals()
     
     try:
         # Get enriched context
@@ -17,7 +17,7 @@ def main():
         
         # Get weather if available
         weather_text = "Weather information not available"
-        if os.environ.get("CONTEXTUAL_CC_WEATHER_API_KEY"):
+        if os.environ.get("CONTEXTUALS_WEATHER_API_KEY"):
             try:
                 weather = context.weather.current(location_name)
                 weather_text = f"{weather['data']['temp_c']}°C, {weather['data']['condition']['text']}"
@@ -26,7 +26,7 @@ def main():
         
         # Get news if available
         news_text = "News information not available"
-        if os.environ.get("CONTEXTUAL_CC_NEWS_API_KEY"):
+        if os.environ.get("CONTEXTUALS_NEWS_API_KEY"):
             try:
                 news = context.news.get_top_headlines(country="gb", page_size=2)
                 news_text = "\n".join([f"- {a['title']}" for a in news["data"]["articles"][:2]])

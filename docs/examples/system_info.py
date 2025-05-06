@@ -1,6 +1,6 @@
-"""Example of using system information features of Contextual-CC."""
+"""Example of using system information features of Contextuals."""
 
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 
 def main():
@@ -8,7 +8,7 @@ def main():
     print("=== System Information Example ===\n")
     
     # Initialize the library
-    context = ContextualCC()
+    context = Contextuals()
     
     # 1. Basic system information
     print("--- Basic System Information ---")

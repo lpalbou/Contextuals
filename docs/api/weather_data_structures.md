@@ -1,6 +1,6 @@
 # Weather API Data Structures
 
-This document describes the data structures returned by the various weather API methods in Contextual-CC.
+This document describes the data structures returned by the various weather API methods in Contextuals.
 
 ## Common Structure
 

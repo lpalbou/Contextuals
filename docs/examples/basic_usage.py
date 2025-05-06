@@ -1,11 +1,11 @@
-"""Basic usage examples for Contextual-CC."""
+"""Basic usage examples for Contextuals."""
 
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
 def main():
-    """Demonstrate basic usage of Contextual-CC."""
+    """Demonstrate basic usage of Contextuals."""
     # Initialize with default configuration
-    context = ContextualCC()
+    context = Contextuals()
     
     print("===== TIME CONTEXT =====")
     # Get current time
@@ -48,8 +48,8 @@ def main():
     
     print("\n===== WEATHER CONTEXT =====")
     # Weather operations require an API key
-    # You can set it via environment variable CONTEXTUAL_CC_WEATHER_API_KEY
-    # or pass it when initializing ContextualCC
+    # You can set it via environment variable CONTEXTUALS_WEATHER_API_KEY
+    # or pass it when initializing Contextuals
     
     # Try to get weather information
     try:

@@ -54,3 +54,5 @@ backup/
 .pytest_cache/
 dist/
 .claude
+
+.venv-contextuals

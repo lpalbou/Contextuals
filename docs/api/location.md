@@ -1,6 +1,6 @@
 # Location API Reference
 
-This document provides detailed API reference for the location context module in Contextual-CC.
+This document provides detailed API reference for the location context module in Contextuals.
 
 ## Table of Contents
 - [LocationProvider](#locationprovider)
@@ -20,7 +20,7 @@ LocationProvider(config: Config, cache: Cache)
 - `config`: Configuration instance
 - `cache`: Cache instance
 
-**Note:** You typically won't instantiate this class directly but access it through the `ContextualCC` interface.
+**Note:** You typically won't instantiate this class directly but access it through the `Contextuals` interface.
 
 ### Methods
 
@@ -50,9 +50,9 @@ Get location information by name or address.
 
 **Example:**
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC()
+context = Contextuals()
 location = context.location.get("Sydney Opera House")
 
 print(f"Location: {location['name']}")
@@ -222,7 +222,7 @@ Calculate the great-circle distance between two points on Earth.
 
 **Example:**
 ```python
-from contextual_cc.location.utils import calculate_haversine_distance
+from contextuals.location.utils import calculate_haversine_distance
 
 distance = calculate_haversine_distance(
     lat1=51.5074, lon1=-0.1278,  # London
@@ -251,7 +251,7 @@ Get the cardinal direction (N, NE, E, etc.) from point 1 to point 2.
 
 **Example:**
 ```python
-from contextual_cc.location.utils import get_cardinal_direction
+from contextuals.location.utils import get_cardinal_direction
 
 direction = get_cardinal_direction(
     lat1=51.5074, lon1=-0.1278,  # London
@@ -279,7 +279,7 @@ Parse a string representation of coordinates.
 
 **Example:**
 ```python
-from contextual_cc.location.utils import parse_coordinates
+from contextuals.location.utils import parse_coordinates
 
 # Parse comma-separated coordinates
 lat, lon = parse_coordinates("40.7128,-74.0060")
@@ -315,7 +315,7 @@ Format coordinates in different formats.
 
 **Example:**
 ```python
-from contextual_cc.location.utils import format_coordinates
+from contextuals.location.utils import format_coordinates
 
 # Format as decimal degrees
 decimal = format_coordinates(40.7128, -74.0060, format_type="decimal")
@@ -347,7 +347,7 @@ Check if coordinates are valid.
 
 **Example:**
 ```python
-from contextual_cc.location.utils import is_valid_coordinate
+from contextuals.location.utils import is_valid_coordinate
 
 print(is_valid_coordinate(40.7128, -74.0060))  # True
 print(is_valid_coordinate(100, -74.0060))     # False (latitude > 90)

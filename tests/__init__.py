@@ -1,1 +1,1 @@
-"""Test package for Contextual-CC."""
+"""Test package for Contextuals."""

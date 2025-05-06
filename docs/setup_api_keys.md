@@ -1,6 +1,6 @@
 # Setting Up API Keys
 
-This guide explains how to obtain and set up API keys for the various services used by Contextual-CC.
+This guide explains how to obtain and set up API keys for the various services used by Contextuals.
 
 ## Table of Contents
 - [Weather API](#weather-api)
@@ -11,7 +11,7 @@ This guide explains how to obtain and set up API keys for the various services u
 
 ## Weather API
 
-Contextual-CC uses [OpenWeatherMap.org](https://openweathermap.org/) for weather information by default.
+Contextuals uses [OpenWeatherMap.org](https://openweathermap.org/) for weather information by default.
 
 ### Getting an OpenWeatherMap API Key
 
@@ -24,7 +24,7 @@ Contextual-CC uses [OpenWeatherMap.org](https://openweathermap.org/) for weather
 
 ## News API
 
-Contextual-CC uses [NewsAPI.org](https://newsapi.org/) to retrieve news headlines and articles.
+Contextuals uses [NewsAPI.org](https://newsapi.org/) to retrieve news headlines and articles.
 
 ### Getting a NewsAPI.org API Key
 
@@ -36,13 +36,13 @@ Contextual-CC uses [NewsAPI.org](https://newsapi.org/) to retrieve news headline
 
 ## Location API
 
-For location services, Contextual-CC uses [OpenStreetMap's Nominatim API](https://nominatim.org/) by default. This service doesn't require an API key but has usage limitations:
+For location services, Contextuals uses [OpenStreetMap's Nominatim API](https://nominatim.org/) by default. This service doesn't require an API key but has usage limitations:
 
 - Maximum of 1 request per second
 - No more than 25,000 requests per day
-- Must include a valid User-Agent header (Contextual-CC handles this automatically)
+- Must include a valid User-Agent header (Contextuals handles this automatically)
 
-For higher volume applications, you may want to use a different geocoding service and configure Contextual-CC accordingly.
+For higher volume applications, you may want to use a different geocoding service and configure Contextuals accordingly.
 
 ## Setting API Keys in Your Environment
 
@@ -53,9 +53,9 @@ The recommended way to set API keys is through environment variables. This keeps
 Add these lines to your `~/.bashrc`, `~/.zshrc`, or equivalent shell configuration file:
 
 ```bash
-export CONTEXTUAL_CC_WEATHER_API_KEY="your_weather_api_key"
-export CONTEXTUAL_CC_NEWS_API_KEY="your_news_api_key"
-export CONTEXTUAL_CC_LOCATION_API_KEY="your_location_api_key"  # If using a service that requires a key
+export CONTEXTUALS_WEATHER_API_KEY="your_weather_api_key"
+export CONTEXTUALS_NEWS_API_KEY="your_news_api_key"
+# Note: The default location provider (OpenStreetMap Nominatim) doesn't require an API key
 ```
 
 Then reload your shell configuration:
@@ -69,9 +69,9 @@ source ~/.bashrc  # or source ~/.zshrc
 Set environment variables in Command Prompt:
 
 ```cmd
-set CONTEXTUAL_CC_WEATHER_API_KEY=your_weather_api_key
-set CONTEXTUAL_CC_NEWS_API_KEY=your_news_api_key
-set CONTEXTUAL_CC_LOCATION_API_KEY=your_location_api_key
+set CONTEXTUALS_WEATHER_API_KEY=your_weather_api_key
+set CONTEXTUALS_NEWS_API_KEY=your_news_api_key
+REM Note: The default location provider (OpenStreetMap Nominatim) doesn't require an API key
 ```
 
 To set them permanently, use the System Properties:
@@ -85,9 +85,9 @@ To set them permanently, use the System Properties:
 Set environment variables in PowerShell:
 
 ```powershell
-$env:CONTEXTUAL_CC_WEATHER_API_KEY = "your_weather_api_key"
-$env:CONTEXTUAL_CC_NEWS_API_KEY = "your_news_api_key"
-$env:CONTEXTUAL_CC_LOCATION_API_KEY = "your_location_api_key"
+$env:CONTEXTUALS_WEATHER_API_KEY = "your_weather_api_key"
+$env:CONTEXTUALS_NEWS_API_KEY = "your_news_api_key"
+# Note: The default location provider (OpenStreetMap Nominatim) doesn't require an API key
 ```
 
 To make these permanent, add them to your PowerShell profile:
@@ -102,38 +102,38 @@ You can also set API keys directly in your code, though this is less secure for 
 ### Setting Keys During Initialization
 
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC(
+context = Contextuals(
     weather_api_key="your_weather_api_key",
-    news_api_key="your_news_api_key",
-    location_api_key="your_location_api_key"
+    news_api_key="your_news_api_key"
+    # Note: The default location provider (OpenStreetMap Nominatim) doesn't require an API key
 )
 ```
 
 ### Setting Keys After Initialization
 
 ```python
-from contextual_cc import ContextualCC
+from contextuals import Contextuals
 
-context = ContextualCC()
+context = Contextuals()
 context.set_api_key("weather", "your_weather_api_key")
 context.set_api_key("news", "your_news_api_key")
-context.set_api_key("location", "your_location_api_key")
+# Note: The default location provider (OpenStreetMap Nominatim) doesn't require an API key
 ```
 
 ## Using a .env File
 
-For development, you can use a `.env` file with the [python-dotenv](https://pypi.org/project/python-dotenv/) package, which Contextual-CC includes as a dependency.
+For development, you can use a `.env` file with the [python-dotenv](https://pypi.org/project/python-dotenv/) package, which Contextuals includes as a dependency.
 
 1. Create a file named `.env` in your project root:
    ```
-   CONTEXTUAL_CC_WEATHER_API_KEY=your_weather_api_key
-   CONTEXTUAL_CC_NEWS_API_KEY=your_news_api_key
-   CONTEXTUAL_CC_LOCATION_API_KEY=your_location_api_key
+   CONTEXTUALS_WEATHER_API_KEY=your_weather_api_key
+   CONTEXTUALS_NEWS_API_KEY=your_news_api_key
+   # Note: The default location provider (OpenStreetMap Nominatim) doesn't require an API key
    ```
 
-2. The environment variables will be loaded automatically when you import Contextual-CC.
+2. The environment variables will be loaded automatically when you import Contextuals.
 
 **Important:** Don't commit `.env` files to source control. Add them to your `.gitignore` file:
 ```

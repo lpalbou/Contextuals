@@ -1,15 +1,15 @@
-"""Main entry point for Contextual-CC library."""
+"""Main entry point for Contextuals library."""
 
 import datetime
 from typing import Dict, Any, Optional
 
-from contextual_cc.core.config import Config
-from contextual_cc.core.cache import Cache
-from contextual_cc.core.context_manager import ContextManager
-from contextual_cc.time.time_provider import TimeProvider
+from contextuals.core.config import Config
+from contextuals.core.cache import Cache
+from contextuals.core.context_manager import ContextManager
+from contextuals.time.time_provider import TimeProvider
 
 
-class ContextualCC:
+class Contextuals:
     """Main class for accessing contextual information.
     
     Provides a unified interface to access different types of contextual information
@@ -17,7 +17,7 @@ class ContextualCC:
     """
     
     def __init__(self, **kwargs):
-        """Initialize ContextualCC with optional configuration.
+        """Initialize Contextuals with optional configuration.
         
         Args:
             **kwargs: Configuration options to override defaults.
@@ -25,10 +25,10 @@ class ContextualCC:
         Example:
             ```python
             # Initialize with default configuration
-            context = ContextualCC()
+            context = Contextuals()
             
             # Initialize with custom configuration
-            context = ContextualCC(
+            context = Contextuals(
                 cache_duration=600,  # 10 minutes
                 weather_api_key="your_api_key"
             )
@@ -66,7 +66,7 @@ class ContextualCC:
             ImportError: If the weather module is not available.
         """
         if self._weather is None:
-            from contextual_cc.weather.weather_provider import WeatherProvider
+            from contextuals.weather.weather_provider import WeatherProvider
             self._weather = WeatherProvider(self.config, self.cache)
         return self._weather
     
@@ -81,7 +81,7 @@ class ContextualCC:
             ImportError: If the location module is not available.
         """
         if self._location is None:
-            from contextual_cc.location.location_provider import LocationProvider
+            from contextuals.location.location_provider import LocationProvider
             self._location = LocationProvider(self.config, self.cache, self.context_manager)
         return self._location
     
@@ -96,7 +96,7 @@ class ContextualCC:
             ImportError: If the news module is not available.
         """
         if self._news is None:
-            from contextual_cc.news.news_provider import NewsProvider
+            from contextuals.news.news_provider import NewsProvider
             self._news = NewsProvider(self.config, self.cache, self.context_manager)
         return self._news
     
@@ -111,7 +111,7 @@ class ContextualCC:
             ImportError: If the system module is not available.
         """
         if self._system is None:
-            from contextual_cc.system.system_provider import SystemProvider
+            from contextuals.system.system_provider import SystemProvider
             self._system = SystemProvider(self.config, self.cache, self.context_manager)
         return self._system
     
@@ -156,7 +156,7 @@ class ContextualCC:
         """
         # Ensure location provider is initialized
         if self._location is None:
-            from contextual_cc.location.location_provider import LocationProvider
+            from contextuals.location.location_provider import LocationProvider
             self._location = LocationProvider(self.config, self.cache, self.context_manager)
         
         # Get location data and set as current location
@@ -295,33 +295,16 @@ class ContextualCC:
         
         # Add news information - this requires internet access
         try:
-            # Try to get country-specific news
-            country_code = None
-            if "location" in result and "error" not in result["location"] and result["location"].get("type") != "location_unavailable":
-                if "data" in result["location"] and "address" in result["location"]["data"]:
-                    address = result["location"]["data"]["address"]
-                    country_code = address.get("country_code", None)
-            
-            if country_code:
-                try:
-                    result["news"] = self.news.get_country_news(country_code)
-                except Exception as e:
-                    result["news"] = {
-                        "timestamp": response_time,
-                        "type": "news_unavailable",
-                        "is_cached": False,
-                        "data": {"status": "unavailable", "reason": str(e)}
-                    }
-            else:
-                try:
-                    result["news"] = self.news.get_world_news()
-                except Exception as e:
-                    result["news"] = {
-                        "timestamp": response_time,
-                        "type": "news_unavailable",
-                        "is_cached": False,
-                        "data": {"status": "unavailable", "reason": str(e)}
-                    }
+            # Always use world news by default for the "all" command
+            try:
+                result["news"] = self.news.get_world_news()
+            except Exception as e:
+                result["news"] = {
+                    "timestamp": response_time,
+                    "type": "news_unavailable",
+                    "is_cached": False,
+                    "data": {"status": "unavailable", "reason": str(e)}
+                }
         except Exception as e:
             result["news"] = {
                 "timestamp": response_time,
@@ -330,35 +313,7 @@ class ContextualCC:
                 "data": {"status": "unavailable"}
             }
         
-        # Add system information - this should always work as it's all local
-        try:
-            result["system"] = self.system.get_system_info()
-            result["user"] = self.system.get_user_info()
-            
-            try:
-                result["who"] = self.system.get_logged_users()
-            except Exception as user_e:
-                result["who"] = {
-                    "timestamp": response_time,
-                    "type": "logged_users_unavailable",
-                    "data": {"status": "unavailable", "reason": str(user_e)}
-                }
-                
-            try:
-                result["machine"] = self.system.get_machine_info()
-            except Exception as machine_e:
-                result["machine"] = {
-                    "timestamp": response_time,
-                    "type": "machine_info_unavailable",
-                    "data": {"status": "unavailable", "reason": str(machine_e)}
-                }
-        except Exception as e:
-            # Since these are local calls, they should almost never fail
-            # But we'll provide fallbacks anyway
-            result["system"] = {
-                "timestamp": response_time,
-                "type": "system_info_unavailable",
-                "data": {"status": "unavailable", "reason": str(e)}
-            }
+        # System information is not included by default as it may not be available or relevant
+        # for all platforms and use cases
         
         return result

@@ -1,4 +1,4 @@
-"""Time provider for Contextual-CC."""
+"""Time provider for Contextuals."""
 
 import time
 import datetime
@@ -7,9 +7,9 @@ from typing import Optional, Dict, Any, Union
 import threading
 import requests
 
-from contextual_cc.core.cache import Cache, cached
-from contextual_cc.core.config import Config
-from contextual_cc.core.exceptions import APIError, NetworkError, FallbackError
+from contextuals.core.cache import Cache, cached
+from contextuals.core.config import Config
+from contextuals.core.exceptions import APIError, NetworkError, FallbackError
 
 
 class TimeProvider:

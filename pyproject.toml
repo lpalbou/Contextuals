@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "contextual-cc"
+name = "contextuals"
 version = "0.1.0"
 description = "A library for contextual information support in AI applications"
 authors = ["Laurent-Philippe Albou <lpalbou@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/lpalbou/contextual-cc"
-packages = [{include = "contextual_cc"}]
+repository = "https://github.com/lpalbou/contextuals"
+packages = [{include = "contextuals"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8.1,<4.0"
 requests = "^2.31.0"
 python-dotenv = "^1.0.0"
 jsonschema = "^4.19.1"
@@ -20,14 +20,13 @@ argparse = "^1.4.0"
 cli = ["argparse"]
 
 [tool.poetry.scripts]
-contextual = "contextual_cc.cli:main"
+contextuals = "contextuals.cli:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 black = "^23.7.0"
 isort = "^5.12.0"
-flake8 = "^6.1.0"
 
 [build-system]
 requires = ["poetry-core"]

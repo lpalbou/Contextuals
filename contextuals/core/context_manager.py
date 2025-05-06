@@ -4,8 +4,8 @@ import datetime
 import time
 from typing import Dict, Any, Optional
 
-from contextual_cc.core.config import Config
-from contextual_cc.core.cache import Cache
+from contextuals.core.config import Config
+from contextuals.core.cache import Cache
 
 
 class ContextManager:

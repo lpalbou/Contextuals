@@ -1,4 +1,4 @@
-"""Location provider for Contextual-CC."""
+"""Location provider for Contextuals."""
 
 import json
 import math
@@ -6,9 +6,9 @@ import datetime
 from typing import Dict, Any, Optional, List, Tuple, Union
 import requests
 
-from contextual_cc.core.cache import Cache, cached
-from contextual_cc.core.config import Config
-from contextual_cc.core.exceptions import APIError, NetworkError, MissingAPIKeyError
+from contextuals.core.cache import Cache, cached
+from contextuals.core.config import Config
+from contextuals.core.exceptions import APIError, NetworkError, MissingAPIKeyError
 
 
 class LocationProvider:
@@ -241,7 +241,7 @@ class LocationProvider:
                 params["key"] = api_key
             
             headers = {
-                "User-Agent": "ContextualCC/0.1.0",  # Required for Nominatim
+                "User-Agent": "Contextuals/0.1.0",  # Required for Nominatim
             }
             
             response = requests.get(api_url, params=params, headers=headers, timeout=10)
@@ -343,7 +343,7 @@ class LocationProvider:
                 params["key"] = api_key
             
             headers = {
-                "User-Agent": "ContextualCC/0.1.0",  # Required for Nominatim
+                "User-Agent": "Contextuals/0.1.0",  # Required for Nominatim
             }
             
             response = requests.get(api_url, params=params, headers=headers, timeout=10)
@@ -412,7 +412,7 @@ class LocationProvider:
             }
         else:
             # Otherwise, we need to use a timezone API or approximate
-            from contextual_cc.time.time_provider import TimeProvider
+            from contextuals.time.time_provider import TimeProvider
             time_provider = TimeProvider(self.config, self.cache)
             
             # Get an approximate timezone based on longitude
@@ -447,7 +447,7 @@ class LocationProvider:
         Raises:
             ValueError: If unit is not 'km' or 'mi'.
         """
-        from contextual_cc.location.utils import calculate_haversine_distance
+        from contextuals.location.utils import calculate_haversine_distance
         return calculate_haversine_distance(lat1, lon1, lat2, lon2, unit)
     
     def get_nearby_locations(self, latitude: float, longitude: float, radius: float, 
@@ -495,7 +495,7 @@ class LocationProvider:
                 params["key"] = api_key
             
             headers = {
-                "User-Agent": "ContextualCC/0.1.0",  # Required for Nominatim
+                "User-Agent": "Contextuals/0.1.0",  # Required for Nominatim
             }
             
             response = requests.get(api_url, params=params, headers=headers, timeout=10)
