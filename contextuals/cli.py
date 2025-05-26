@@ -14,13 +14,30 @@ def format_output(data: Dict[str, Any], format_type: str = "pretty") -> str:
     
     Args:
         data: Data to format
-        format_type: Output format (pretty, json, compact)
+        format_type: Output format (pretty, json, compact, markdown)
         
     Returns:
         Formatted string
     """
+    # Check if minified flag is set
+    minified = data.get("minified", False)
+    
+    # Special handling for simple markdown format
+    if data.get("type") == "simple_context_markdown" and data.get("format") == "markdown":
+        return data["data"]["content"]
+    
+    # Special handling for simple JSON format
+    if data.get("type") == "simple_context" and data.get("format") == "json":
+        if minified:
+            return json.dumps(data["data"], separators=(',', ':'))
+        else:
+            return json.dumps(data["data"], indent=2)
+    
     if format_type == "json":
-        return json.dumps(data, indent=2)
+        if minified:
+            return json.dumps(data, separators=(',', ':'))
+        else:
+            return json.dumps(data, indent=2)
     elif format_type == "compact":
         return json.dumps(data)
     else:  # pretty format
@@ -422,7 +439,10 @@ def all_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any
     Returns:
         All context data
     """
-    return context.get_all_context()
+    result = context.get_all_context()
+    # Add minified flag to the result for format_output to use
+    result["minified"] = getattr(args, 'minified', False)
+    return result
 
 
 def system_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
@@ -475,6 +495,40 @@ def machine_command(args: argparse.Namespace, context: Contextuals) -> Dict[str,
         Machine data
     """
     return context.system.get_machine_info()
+
+
+def simple_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
+    """Handle simple command - get simple contextual information.
+    
+    Args:
+        args: Command arguments
+        context: Contextuals instance
+        
+    Returns:
+        Simple context data
+    """
+    if args.format == "markdown":
+        # Return markdown as a special data structure
+        markdown_content = context.get_simple_context_markdown()
+        return {
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "type": "simple_context_markdown",
+            "format": "markdown",
+            "minified": getattr(args, 'minified', False),
+            "data": {
+                "content": markdown_content
+            }
+        }
+    else:
+        # Return JSON format
+        simple_data = context.get_simple_context()
+        return {
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "type": "simple_context",
+            "format": "json",
+            "minified": getattr(args, 'minified', False),
+            "data": simple_data
+        }
 
 
 def location_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
@@ -628,6 +682,8 @@ def main() -> None:
     all_parser = subparsers.add_parser("all", help="Get all contextual information")
     all_parser.add_argument("--format", choices=["pretty", "json", "compact"], default="pretty",
                           help="Output format (default: pretty)")
+    all_parser.add_argument("--minified", action="store_true", 
+                          help="Minify JSON output (only applies to JSON format)")
     
     # Time command
     time_parser = subparsers.add_parser("time", help="Get current time")
@@ -691,6 +747,18 @@ def main() -> None:
     machine_parser.add_argument("--format", choices=["pretty", "json", "compact"], default="pretty",
                               help="Output format (default: pretty)")
     
+    # Simple command
+    simple_parser = subparsers.add_parser("simple", help="Get simple contextual information for LLM prompts")
+    simple_parser.add_argument("--format", choices=["json", "markdown"], default="json",
+                             help="Output format (default: json)")
+    simple_parser.add_argument("--minified", action="store_true", 
+                             help="Minify JSON output (only applies to JSON format)")
+    
+    # System command
+    system_parser = subparsers.add_parser("system", help="Get system information")
+    system_parser.add_argument("--format", choices=["pretty", "json", "compact"], default="pretty",
+                             help="Output format (default: pretty)")
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -722,6 +790,10 @@ def main() -> None:
             result = who_command(args, context)
         elif args.command == "machine":
             result = machine_command(args, context)
+        elif args.command == "simple":
+            result = simple_command(args, context)
+        elif args.command == "system":
+            result = system_command(args, context)
         else:
             print(f"Unknown command: {args.command}")
             sys.exit(1)
