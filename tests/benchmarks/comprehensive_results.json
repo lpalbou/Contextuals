@@ -143,521 +143,343 @@
       "avg_tokens_per_second": 18.33927992960552,
       "has_thinking": false,
       "thinking_count": 0
+    },
+    {
+      "model_name": "qwen3:30b-a3b-q4_K_M",
+      "prompt_variant": "DEFAULT",
+      "total_time": 147.13212609291077,
+      "avg_tokens_per_second": 59.22567852038852,
+      "has_thinking": true,
+      "thinking_count": 11
+    },
+    {
+      "model_name": "qwen3:30b-a3b-q4_K_M",
+      "prompt_variant": "STRUCTURED",
+      "total_time": 137.64826917648315,
+      "avg_tokens_per_second": 49.815373931134765,
+      "has_thinking": true,
+      "thinking_count": 11
+    },
+    {
+      "model_name": "qwen3:30b-a3b-q4_K_M",
+      "prompt_variant": "COMPACT",
+      "total_time": 185.13622403144836,
+      "avg_tokens_per_second": 48.20774565697065,
+      "has_thinking": true,
+      "thinking_count": 11
     }
   ],
   "judge_evaluation": {
     "Q1": {
-      "granite3.3:2b_DEFAULT": [
-        7,
-        6,
-        7
-      ],
-      "granite3.3:2b_STRUCTURED": [
-        8,
-        8,
-        8
-      ],
-      "granite3.3:2b_COMPACT": [
+      "Question": [
         9,
         9,
         9
       ],
-      "cogito:3b_DEFAULT": [
+      "Answer": [
         9,
         9,
         9
       ],
-      "cogito:3b_STRUCTURED": [
-        7,
-        7,
-        7
-      ],
-      "cogito:3b_COMPACT": [
+      "qwen3:30b-a3b-q4_K_M_DEFAULT": [
         8,
         8,
         8
       ],
-      "gemma3:1b_DEFAULT": [
-        6,
-        7,
-        6
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
+        9,
+        9,
+        9
       ],
-      "gemma3:1b_STRUCTURED": [
-        5,
-        5,
-        5
-      ],
-      "gemma3:1b_COMPACT": [
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
         7,
         7,
         7
-      ],
-      "granite3.3:8b_DEFAULT": [
-        8,
-        8,
-        8
-      ],
-      "granite3.3:8b_STRUCTURED": [
-        9,
-        9,
-        9
-      ],
-      "granite3.3:8b_COMPACT": [
-        9,
-        9,
-        9
-      ],
-      "cogito:8b_DEFAULT": [
-        9,
-        9,
-        9
-      ],
-      "cogito:8b_STRUCTURED": [
-        8,
-        8,
-        8
-      ],
-      "cogito:8b_COMPACT": [
-        9,
-        9,
-        9
       ],
       "gemma3:12b_DEFAULT": [
-        6,
-        6,
-        6
+        9,
+        9,
+        9
       ],
       "gemma3:12b_STRUCTURED": [
-        5,
-        5,
-        5
+        9,
+        9,
+        9
       ],
       "gemma3:12b_COMPACT": [
-        6,
+        8,
+        8,
+        8
+      ]
+    },
+    "Q2": {
+      "qwen3:30b-a3b-q4_K_M_DEFAULT": [
+        8,
+        7,
+        7
+      ],
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
+        9,
+        8,
+        8
+      ],
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
+        7,
         6,
         6
       ]
     },
-    "Q2": {},
     "Q3": {
-      "granite3.3:2b_DEFAULT": [
-        9,
-        10,
-        7
-      ],
-      "granite3.3:2b_STRUCTURED": [
-        7,
-        8,
-        6
-      ],
-      "granite3.3:2b_COMPACT": [
-        6,
-        9,
-        5
-      ],
-      "cogito:3b_DEFAULT": [
-        9,
-        10,
-        8
-      ],
-      "cogito:3b_STRUCTURED": [
+      "Question": [
         9,
         9,
         9
       ],
-      "cogito:3b_COMPACT": [
-        7,
-        8,
-        6
-      ],
-      "gemma3:1b_DEFAULT": [
-        6,
-        7,
-        4
-      ],
-      "gemma3:1b_STRUCTURED": [
-        6,
-        7,
-        5
-      ],
-      "gemma3:1b_COMPACT": [
-        5,
-        6,
-        3
-      ],
-      "granite3.3:8b_DEFAULT": [
-        8,
-        9,
-        6
-      ],
-      "granite3.3:8b_STRUCTURED": [
+      "qwen3:30b-a3b-q4_K_M_DEFAULT": [
         7,
         8,
         7
       ],
-      "granite3.3:8b_COMPACT": [
-        6,
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
+        8,
+        9,
+        9
+      ],
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
         7,
-        5
-      ],
-      "cogito:8b_DEFAULT": [
-        8,
-        9,
-        7
-      ],
-      "cogito:8b_STRUCTURED": [
-        8,
-        9,
+        7,
         8
-      ],
-      "cogito:8b_COMPACT": [
-        7,
-        8,
-        6
-      ],
-      "gemma3:12b_DEFAULT": [
-        9,
-        10,
-        8
-      ],
-      "gemma3:12b_STRUCTURED": [
-        6,
-        7,
-        5
-      ],
-      "gemma3:12b_COMPACT": [
-        7,
-        9,
-        7
       ]
     },
-    "Q4": {},
+    "Q4": {
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
+        5,
+        7,
+        8
+      ],
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
+        4,
+        6,
+        7
+      ],
+      "qwen3:30b-a3b-q4_K_M": [
+        3,
+        5,
+        6
+      ]
+    },
     "Q5": {
-      "granite-3.0-8b": {
-        "contextual_awareness": 1,
-        "accuracy_relevance": 9,
-        "practical_utility": 8
-      },
-      "mistral-7b": {
-        "contextual_awareness": 2,
-        "accuracy_relevance": 9,
-        "practical_utility": 9
-      },
-      "phi-2": {
-        "contextual_awareness": 1,
-        "accuracy_relevance": 8,
-        "practical_utility": 7
-      },
-      "llama-3-8b": {
-        "contextual_awareness": 1,
-        "accuracy_relevance": 9,
-        "practical_utility": 8
-      },
-      "gemma-7b": {
-        "contextual_awareness": 1,
-        "accuracy_relevance": 8,
-        "practical_utility": 8
-      },
-      "mixtral-8x7b": {
-        "contextual_awareness": 2,
-        "accuracy_relevance": 9,
-        "practical_utility": 9
-      }
+      "model1": [
+        3,
+        8,
+        7
+      ],
+      "model2": [
+        2,
+        9,
+        8
+      ],
+      "model3": [
+        1,
+        10,
+        9
+      ]
     },
     "Q6": {
-      "cogito:8b_DEFAULT": [
+      "qwen3:30b-a3b-q4_K_M": [
         6,
+        8,
+        7
+      ],
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
+        4,
         7,
         5
-      ],
-      "cogito:8b_STRUCTURED": [
-        7,
-        6,
-        7
-      ],
-      "cogito:8b_COMPACT": [
-        5,
-        5,
-        6
-      ],
-      "gemma3:12b_DEFAULT": [
-        8,
-        9,
-        8
-      ],
-      "gemma3:12b_STRUCTURED": [
-        9,
-        9,
-        9
-      ],
-      "gemma3:12b_COMPACT": [
-        7,
-        8,
-        7
       ]
     },
     "Q7": {
-      "granite3.3:2b_DEFAULT": [
+      "granite3:30b-a3b-q4_K_M_DEFAULT": [
+        8,
+        9,
+        7
+      ],
+      "granite3:30b-a3b-q4_K_M_STRUCTURED": [
+        9,
+        9,
+        8
+      ],
+      "granite3:30b-a3b-q4_K_M_COMPACT": [
         7,
-        6,
+        8,
         6
       ],
-      "granite3.3:2b_STRUCTURED": [
-        9,
-        9,
-        8
-      ],
-      "granite3.3:2b_COMPACT": [
+      "mistral7b:instruct-v0.2": [
         7,
         8,
-        9
+        7
       ],
-      "cogito:3b_DEFAULT": [
-        9,
-        9,
-        8
-      ],
-      "cogito:3b_STRUCTURED": [
-        9,
-        9,
-        8
-      ],
-      "cogito:3b_COMPACT": [
-        8,
-        8,
-        8
-      ],
-      "gemma3:1b_DEFAULT": [
-        8,
+      "phi3:3.8b-instruct": [
         6,
+        7,
+        6
+      ],
+      "llama3:70b-instruct": [
+        8,
+        9,
         7
       ],
-      "gemma3:1b_STRUCTURED": [
+      "mixtral8x7b-instruct": [
         7,
-        6,
+        8,
         7
       ],
-      "gemma3:1b_COMPACT": [
-        7,
-        7,
+      "qwen3:30b-a3b-q4_K_M_DEFAULT": [
+        8,
+        9,
         7
       ],
-      "granite3.3:8b_DEFAULT": [
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
         9,
         9,
-        9
-      ],
-      "granite3.3:8b_STRUCTURED": [
-        9,
-        9,
-        9
-      ],
-      "granite3.3:8b_COMPACT": [
-        8,
-        8,
         8
       ],
-      "cogito:8b_DEFAULT": [
-        9,
-        9,
-        9
-      ],
-      "cogito:8b_STRUCTURED": [
-        9,
-        9,
-        9
-      ],
-      "cogito:8b_COMPACT": [
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
+        7,
         8,
-        8,
-        8
-      ],
-      "gemma3:12b_DEFAULT": [
-        8,
-        8,
-        8
-      ],
-      "gemma3:12b_STRUCTURED": [
-        8,
-        8,
-        8
-      ],
-      "gemma3:12b_COMPACT": [
-        8,
-        8,
-        8
+        6
       ]
     },
     "Q8": {
-      "gemma3:1b_DEFAULT": [
-        6,
-        7,
-        6
-      ],
-      "gemma3:1b_STRUCTURED": [
-        8,
+      "qwen3:30b-a3b-q4_K_M_DEFAULT": [
+        5,
         8,
         7
       ],
-      "gemma3:1b_COMPACT": [
-        5,
-        6,
-        5
-      ],
-      "gemma3:12b_DEFAULT": [
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
         7,
-        7,
-        6
-      ],
-      "gemma3:12b_STRUCTURED": [
-        9,
         9,
         8
       ],
-      "gemma3:12b_COMPACT": [
-        7,
-        8,
-        7
-      ],
-      "cogito:8b_DEFAULT": [
-        6,
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
+        4,
         7,
         6
       ],
-      "cogito:8b_STRUCTURED": [
-        8,
+      "llama3-8b": [
+        6,
         8,
         7
       ],
-      "cogito:8b_COMPACT": [
+      "phi3-3.8b": [
         5,
+        7,
+        6
+      ],
+      "mistral-7b": [
+        5,
+        7,
+        6
+      ],
+      "gpt-3.5-turbo": [
         6,
-        5
+        8,
+        7
+      ],
+      "gemini-1.5-pro": [
+        7,
+        9,
+        8
+      ],
+      "claude-3-sonnet": [
+        6,
+        8,
+        7
+      ],
+      "mixtral-8x7b": [
+        5,
+        7,
+        6
+      ],
+      "openchat-3.5": [
+        5,
+        7,
+        6
       ]
     },
-    "Q9": {},
-    "Q10": {
-      "cogito:8b_DEFAULT": [
+    "Q9": {
+      "Answer 1: ...": [
         6,
-        6,
-        4
-      ],
-      "cogito:8b_STRUCTURED": [
         7,
-        6,
-        5
+        7
       ],
-      "cogito:8b_COMPACT": [
-        5,
-        5,
-        4
-      ],
-      "gemma3:12b_DEFAULT": [
+      "Answer 2: ...": [
         8,
+        8,
+        9
+      ],
+      "Answer 3: ...": [
+        7,
         7,
         8
-      ],
-      "gemma3:12b_STRUCTURED": [
+      ]
+    },
+    "Q10": {
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
         7,
         6,
-        6
+        7
       ],
-      "gemma3:12b_COMPACT": [
-        7,
-        6,
-        6
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
+        8,
+        8,
+        8
       ]
     },
     "Q11": {
-      "granite3.3:2b_DEFAULT": [
-        2,
-        3,
-        1
-      ],
-      "granite3.3:2b_STRUCTURED": [
-        3,
-        2,
-        2
-      ],
-      "granite3.3:2b_COMPACT": [
-        2,
-        1,
-        1
-      ],
-      "cogito:3b_DEFAULT": [
-        3,
-        2,
-        2
-      ],
-      "cogito:3b_STRUCTURED": [
-        1,
-        1,
-        1
-      ],
-      "cogito:3b_COMPACT": [
-        2,
-        1,
-        1
-      ],
-      "gemma3:1b_DEFAULT": [
-        4,
-        5,
-        3
-      ],
-      "gemma3:1b_STRUCTURED": [
-        4,
-        5,
-        3
-      ],
-      "gemma3:1b_COMPACT": [
-        4,
-        5,
-        3
-      ],
-      "granite3.3:8b_DEFAULT": [
-        2,
-        2,
-        1
-      ],
-      "granite3.3:8b_STRUCTURED": [
-        2,
-        2,
-        1
-      ],
-      "granite3.3:8b_COMPACT": [
-        2,
-        1,
-        1
-      ],
-      "cogito:8b_DEFAULT": [
-        6,
-        7,
-        5
-      ],
-      "cogito:8b_STRUCTURED": [
-        7,
+      "qwen3:30b-a3b-q4_K_M_DEFAULT": [
         8,
+        9,
         6
       ],
-      "cogito:8b_COMPACT": [
-        3,
-        3,
-        2
+      "qwen3:30b-a3b-q4_K_M_STRUCTURED": [
+        9,
+        9,
+        8
+      ],
+      "qwen3:30b-a3b-q4_K_M_COMPACT": [
+        9,
+        9,
+        9
       ],
       "gemma3:12b_DEFAULT": [
-        8,
+        7,
         9,
         7
       ],
       "gemma3:12b_STRUCTURED": [
         8,
         9,
-        7
+        8
       ],
       "gemma3:12b_COMPACT": [
-        6,
         7,
-        5
+        9,
+        7
+      ],
+      "cogito:8b_DEFAULT": [
+        6,
+        5,
+        6
+      ],
+      "cogito:8b_STRUCTURED": [
+        7,
+        7,
+        7
+      ],
+      "cogito:8b_COMPACT": [
+        7,
+        7,
+        7
       ]
     }
   }
