@@ -1,0 +1,228 @@
+{
+  "variant_summary": {
+    "DEFAULT": {
+      "avg_contextual": 6.89,
+      "avg_accuracy": 7.14,
+      "avg_utility": 6.15,
+      "avg_overall": 6.73,
+      "avg_tokens_per_sec": 63.04,
+      "avg_total_time": 65.56,
+      "model_count": 6
+    },
+    "STRUCTURED": {
+      "avg_contextual": 6.86,
+      "avg_accuracy": 6.96,
+      "avg_utility": 6.36,
+      "avg_overall": 6.72,
+      "avg_tokens_per_sec": 66.33,
+      "avg_total_time": 61.0,
+      "model_count": 6
+    },
+    "COMPACT": {
+      "avg_contextual": 6.16,
+      "avg_accuracy": 6.53,
+      "avg_utility": 5.8,
+      "avg_overall": 6.16,
+      "avg_tokens_per_sec": 65.96,
+      "avg_total_time": 71.17,
+      "model_count": 6
+    }
+  },
+  "category_analysis": {
+    "SLM": {
+      "avg_contextual": 6.32,
+      "avg_accuracy": 6.53,
+      "avg_utility": 5.73,
+      "avg_overall": 6.2,
+      "avg_tokens_per_sec": 103.86,
+      "avg_total_time": 25.29,
+      "data_points": 9
+    },
+    "MLM": {
+      "avg_contextual": 6.96,
+      "avg_accuracy": 7.22,
+      "avg_utility": 6.47,
+      "avg_overall": 6.88,
+      "avg_tokens_per_sec": 26.36,
+      "avg_total_time": 106.53,
+      "data_points": 9
+    }
+  },
+  "best_performers": {
+    "highest_contextual": [
+      "cogito:8b_STRUCTURED",
+      {
+        "avg_contextual": 7.71,
+        "avg_accuracy": 7.71,
+        "avg_utility": 7.14,
+        "overall_avg": 7.52,
+        "question_count": 7
+      }
+    ],
+    "highest_accuracy": [
+      "gemma3:12b_DEFAULT",
+      {
+        "avg_contextual": 7.71,
+        "avg_accuracy": 8,
+        "avg_utility": 7.29,
+        "overall_avg": 7.67,
+        "question_count": 7
+      }
+    ],
+    "highest_utility": [
+      "gemma3:12b_DEFAULT",
+      {
+        "avg_contextual": 7.71,
+        "avg_accuracy": 8,
+        "avg_utility": 7.29,
+        "overall_avg": 7.67,
+        "question_count": 7
+      }
+    ],
+    "highest_overall": [
+      "gemma3:12b_DEFAULT",
+      {
+        "avg_contextual": 7.71,
+        "avg_accuracy": 8,
+        "avg_utility": 7.29,
+        "overall_avg": 7.67,
+        "question_count": 7
+      }
+    ]
+  },
+  "insights": [
+    "**Best Overall Prompt Variant**: DEFAULT with 6.73/10 average score",
+    "**Fastest Prompt Variant**: STRUCTURED with 66.33 tokens/sec",
+    "**Model Size Impact**: MLM models score 6.88/10 vs SLM 6.2/10 (+0.7 improvement)",
+    "**Best Contextual Awareness**: cogito:8b_STRUCTURED with 7.71/10",
+    "**Speed Champion**: gemma3:1b_DEFAULT at 118.8 tokens/sec"
+  ],
+  "detailed_scores": {
+    "granite3.3:2b_DEFAULT": {
+      "avg_contextual": 6.25,
+      "avg_accuracy": 6.25,
+      "avg_utility": 5.25,
+      "overall_avg": 5.92,
+      "question_count": 4
+    },
+    "granite3.3:2b_STRUCTURED": {
+      "avg_contextual": 6.75,
+      "avg_accuracy": 6.75,
+      "avg_utility": 6,
+      "overall_avg": 6.5,
+      "question_count": 4
+    },
+    "granite3.3:2b_COMPACT": {
+      "avg_contextual": 6,
+      "avg_accuracy": 6.75,
+      "avg_utility": 6,
+      "overall_avg": 6.25,
+      "question_count": 4
+    },
+    "cogito:3b_DEFAULT": {
+      "avg_contextual": 7.5,
+      "avg_accuracy": 7.5,
+      "avg_utility": 6.75,
+      "overall_avg": 7.25,
+      "question_count": 4
+    },
+    "cogito:3b_STRUCTURED": {
+      "avg_contextual": 6.5,
+      "avg_accuracy": 6.5,
+      "avg_utility": 6.25,
+      "overall_avg": 6.42,
+      "question_count": 4
+    },
+    "cogito:3b_COMPACT": {
+      "avg_contextual": 6.25,
+      "avg_accuracy": 6.25,
+      "avg_utility": 5.75,
+      "overall_avg": 6.08,
+      "question_count": 4
+    },
+    "gemma3:1b_DEFAULT": {
+      "avg_contextual": 6,
+      "avg_accuracy": 6.4,
+      "avg_utility": 5.2,
+      "overall_avg": 5.87,
+      "question_count": 5
+    },
+    "gemma3:1b_STRUCTURED": {
+      "avg_contextual": 6,
+      "avg_accuracy": 6.2,
+      "avg_utility": 5.4,
+      "overall_avg": 5.87,
+      "question_count": 5
+    },
+    "gemma3:1b_COMPACT": {
+      "avg_contextual": 5.6,
+      "avg_accuracy": 6.2,
+      "avg_utility": 5,
+      "overall_avg": 5.6,
+      "question_count": 5
+    },
+    "granite3.3:8b_DEFAULT": {
+      "avg_contextual": 6.75,
+      "avg_accuracy": 7,
+      "avg_utility": 6,
+      "overall_avg": 6.58,
+      "question_count": 4
+    },
+    "granite3.3:8b_STRUCTURED": {
+      "avg_contextual": 6.75,
+      "avg_accuracy": 7,
+      "avg_utility": 6.5,
+      "overall_avg": 6.75,
+      "question_count": 4
+    },
+    "granite3.3:8b_COMPACT": {
+      "avg_contextual": 6.25,
+      "avg_accuracy": 6.25,
+      "avg_utility": 5.75,
+      "overall_avg": 6.08,
+      "question_count": 4
+    },
+    "cogito:8b_DEFAULT": {
+      "avg_contextual": 7.14,
+      "avg_accuracy": 7.71,
+      "avg_utility": 6.43,
+      "overall_avg": 7.1,
+      "question_count": 7
+    },
+    "cogito:8b_STRUCTURED": {
+      "avg_contextual": 7.71,
+      "avg_accuracy": 7.71,
+      "avg_utility": 7.14,
+      "overall_avg": 7.52,
+      "question_count": 7
+    },
+    "cogito:8b_COMPACT": {
+      "avg_contextual": 6,
+      "avg_accuracy": 6.29,
+      "avg_utility": 5.71,
+      "overall_avg": 6,
+      "question_count": 7
+    },
+    "gemma3:12b_DEFAULT": {
+      "avg_contextual": 7.71,
+      "avg_accuracy": 8,
+      "avg_utility": 7.29,
+      "overall_avg": 7.67,
+      "question_count": 7
+    },
+    "gemma3:12b_STRUCTURED": {
+      "avg_contextual": 7.43,
+      "avg_accuracy": 7.57,
+      "avg_utility": 6.86,
+      "overall_avg": 7.29,
+      "question_count": 7
+    },
+    "gemma3:12b_COMPACT": {
+      "avg_contextual": 6.86,
+      "avg_accuracy": 7.43,
+      "avg_utility": 6.57,
+      "overall_avg": 6.95,
+      "question_count": 7
+    }
+  }
+}

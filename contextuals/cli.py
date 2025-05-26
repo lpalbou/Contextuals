@@ -33,6 +33,10 @@ def format_output(data: Dict[str, Any], format_type: str = "pretty") -> str:
         else:
             return json.dumps(data["data"], indent=2)
     
+    # Special handling for context prompt format
+    if data.get("type") == "context_prompt":
+        return data["data"]["content"]
+    
     if format_type == "json":
         if minified:
             return json.dumps(data, separators=(',', ':'))
@@ -531,6 +535,38 @@ def simple_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, 
         }
 
 
+def prompt_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
+    """Handle prompt command - get optimized context prompt for LLM.
+    
+    Args:
+        args: Command arguments
+        context: Contextuals instance
+        
+    Returns:
+        Prompt data
+    """
+    # Get the appropriate prompt variant
+    if args.variant == "compact":
+        prompt_content = context.get_context_prompt_compact()
+    elif args.variant == "detailed":
+        prompt_content = context.get_context_prompt_detailed()
+    elif args.variant == "minimal":
+        prompt_content = context.get_context_prompt_minimal()
+    elif args.variant == "structured":
+        prompt_content = context.get_context_prompt_structured()
+    else:  # default
+        prompt_content = context.get_context_prompt()
+    
+    return {
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "type": "context_prompt",
+        "variant": args.variant,
+        "data": {
+            "content": prompt_content
+        }
+    }
+
+
 def location_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, Any]:
     """Handle location command.
     
@@ -754,6 +790,11 @@ def main() -> None:
     simple_parser.add_argument("--minified", action="store_true", 
                              help="Minify JSON output (only applies to JSON format)")
     
+    # Prompt command
+    prompt_parser = subparsers.add_parser("prompt", help="Get optimized context prompt for LLM system messages")
+    prompt_parser.add_argument("--variant", choices=["default", "compact", "detailed", "minimal", "structured"], 
+                             default="default", help="Prompt variant (default: default)")
+    
     # System command
     system_parser = subparsers.add_parser("system", help="Get system information")
     system_parser.add_argument("--format", choices=["pretty", "json", "compact"], default="pretty",
@@ -792,6 +833,8 @@ def main() -> None:
             result = machine_command(args, context)
         elif args.command == "simple":
             result = simple_command(args, context)
+        elif args.command == "prompt":
+            result = prompt_command(args, context)
         elif args.command == "system":
             result = system_command(args, context)
         else:

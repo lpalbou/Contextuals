@@ -638,6 +638,157 @@ class Contextuals:
         
         return "\n".join(md_lines)
     
+    def get_context_prompt(self) -> str:
+        """Get contextual information formatted as an optimized LLM system prompt.
+        
+        Returns:
+            Optimized prompt string with contextual information for LLM usage.
+        """
+        simple_data = self.get_simple_context()
+        
+        # Create token-efficient prompt
+        prompt_parts = []
+        
+        # Header - concise explanation
+        prompt_parts.append("CONTEXT: Real-time user environment data for personalized responses.")
+        
+        # Core data in compact format
+        prompt_parts.append(f"TIME: {simple_data['time']}")
+        prompt_parts.append(f"USER: {simple_data['username']} ({simple_data['full_name']}) | Lang: {simple_data['language']}")
+        
+        # Location
+        loc = simple_data['location']
+        prompt_parts.append(f"LOCATION: {loc['city']}, {loc['country']} ({loc['latitude']:.2f},{loc['longitude']:.2f})")
+        
+        # Weather - most relevant info
+        weather = simple_data['weather']
+        prompt_parts.append(f"WEATHER: {weather['temp_c']}°C, {weather['sky']}, {weather['humidity']}% humidity, {weather['wind_kph']}km/h {weather['wind_dir']}")
+        
+        # Air quality - health relevant
+        aq = simple_data['air_quality']
+        prompt_parts.append(f"AIR: AQI {aq['aqi']['value']} ({aq['aqi']['description']}) - {aq['recommendations']['general']}")
+        
+        # Astronomy - time context
+        astro = simple_data['astronomy']
+        prompt_parts.append(f"SUN: Rise {astro['sunrise']}, Set {astro['sunset']} | Moon: {astro['phase_description']}")
+        
+        # Machine context
+        machine = simple_data['machine']
+        prompt_parts.append(f"SYSTEM: {machine['platform']}, {machine['model']}, {machine['memory_free']:.0f}GB free")
+        
+        # News if available
+        if simple_data['news']:
+            news_titles = [article['title'][:50] + "..." if len(article['title']) > 50 else article['title'] 
+                          for article in simple_data['news'][:2]]
+            prompt_parts.append(f"NEWS: {' | '.join(news_titles)}")
+        
+        # Usage instructions - very concise
+        prompt_parts.append("\nUSAGE: Reference this context for location-aware, time-sensitive, weather-appropriate, and culturally relevant responses. Consider user's environment, current conditions, and local context in your assistance.")
+        
+        return "\n".join(prompt_parts)
+    
+    def get_context_prompt_compact(self) -> str:
+        """Get ultra-compact contextual prompt for token efficiency."""
+        simple_data = self.get_simple_context()
+        
+        # Ultra-compact format
+        loc = simple_data['location']
+        weather = simple_data['weather']
+        
+        compact_parts = [
+            f"CTX: {simple_data['time'][:16]}",
+            f"USR: {simple_data['username']} | {loc['city']},{loc['country']}",
+            f"ENV: {weather['temp_c']}°C {weather['sky']} | AQI:{simple_data['air_quality']['aqi']['value']}",
+            f"SYS: {simple_data['machine']['platform'][:15]}",
+            "Use for location/time/weather-aware responses."
+        ]
+        
+        return " | ".join(compact_parts)
+    
+    def get_context_prompt_detailed(self) -> str:
+        """Get detailed contextual prompt with comprehensive information."""
+        simple_data = self.get_simple_context()
+        
+        prompt_parts = []
+        prompt_parts.append("=== CONTEXTUAL INFORMATION ===")
+        prompt_parts.append("This data provides real-time user environment context for personalized assistance.")
+        prompt_parts.append("")
+        
+        # Detailed sections
+        prompt_parts.append(f"TEMPORAL CONTEXT:")
+        prompt_parts.append(f"• Current time: {simple_data['time']}")
+        prompt_parts.append("")
+        
+        prompt_parts.append(f"USER PROFILE:")
+        prompt_parts.append(f"• Name: {simple_data['full_name']} ({simple_data['username']})")
+        prompt_parts.append(f"• Language/Locale: {simple_data['language']}")
+        prompt_parts.append("")
+        
+        loc = simple_data['location']
+        prompt_parts.append(f"GEOGRAPHIC CONTEXT:")
+        prompt_parts.append(f"• Location: {loc['city']}, {loc['country']}")
+        prompt_parts.append(f"• Coordinates: {loc['latitude']:.4f}, {loc['longitude']:.4f}")
+        prompt_parts.append("")
+        
+        weather = simple_data['weather']
+        prompt_parts.append(f"ENVIRONMENTAL CONDITIONS:")
+        prompt_parts.append(f"• Weather: {weather['temp_c']}°C, {weather['sky']}")
+        prompt_parts.append(f"• Wind: {weather['wind_kph']} km/h {weather['wind_dir']}, Humidity: {weather['humidity']}%")
+        
+        aq = simple_data['air_quality']
+        prompt_parts.append(f"• Air Quality: {aq['aqi']['description']} (AQI {aq['aqi']['value']})")
+        prompt_parts.append(f"• Health Advice: {aq['recommendations']['general']}")
+        prompt_parts.append("")
+        
+        astro = simple_data['astronomy']
+        prompt_parts.append(f"ASTRONOMICAL DATA:")
+        prompt_parts.append(f"• Sunrise: {astro['sunrise']}, Sunset: {astro['sunset']}")
+        prompt_parts.append(f"• Moon Phase: {astro['phase_description']}")
+        prompt_parts.append("")
+        
+        if simple_data['news']:
+            prompt_parts.append(f"CURRENT NEWS CONTEXT:")
+            for i, article in enumerate(simple_data['news'][:3], 1):
+                prompt_parts.append(f"• {article['title']} ({article['source']})")
+            prompt_parts.append("")
+        
+        prompt_parts.append("USAGE GUIDELINES:")
+        prompt_parts.append("• Reference location for local recommendations, services, and cultural context")
+        prompt_parts.append("• Consider weather for activity suggestions and safety advice")
+        prompt_parts.append("• Use time context for scheduling and time-sensitive information")
+        prompt_parts.append("• Adapt language and cultural references to user's locale")
+        prompt_parts.append("• Factor in air quality for health-related recommendations")
+        
+        return "\n".join(prompt_parts)
+    
+    def get_context_prompt_minimal(self) -> str:
+        """Get minimal contextual prompt for extreme token efficiency."""
+        simple_data = self.get_simple_context()
+        
+        loc = simple_data['location']
+        weather = simple_data['weather']
+        
+        return f"User: {simple_data['username']} in {loc['city']}, {loc['country']} | {weather['temp_c']}°C {weather['sky']} | {simple_data['time'][:16]} | Personalize responses to location/weather/time."
+    
+    def get_context_prompt_structured(self) -> str:
+        """Get structured contextual prompt in JSON-like format."""
+        simple_data = self.get_simple_context()
+        
+        # Create structured format
+        structured_parts = []
+        structured_parts.append("CONTEXT_DATA: {")
+        structured_parts.append(f'  "user": "{simple_data["username"]} ({simple_data["full_name"]})",')
+        structured_parts.append(f'  "location": "{simple_data["location"]["city"]}, {simple_data["location"]["country"]}",')
+        structured_parts.append(f'  "time": "{simple_data["time"][:16]}",')
+        structured_parts.append(f'  "weather": "{simple_data["weather"]["temp_c"]}°C, {simple_data["weather"]["sky"]}",')
+        structured_parts.append(f'  "air_quality": "AQI {simple_data["air_quality"]["aqi"]["value"]} ({simple_data["air_quality"]["aqi"]["description"]})",')
+        structured_parts.append(f'  "system": "{simple_data["machine"]["platform"]}"')
+        structured_parts.append("}")
+        structured_parts.append("")
+        structured_parts.append("INSTRUCTIONS: Use this context to provide location-aware, time-sensitive, weather-appropriate responses. Consider user's environment and local conditions in all assistance.")
+        
+        return "\n".join(structured_parts)
+    
     def get_all_context_json(self, minified: bool = False) -> str:
         """Get all contextual information as JSON string.
         
