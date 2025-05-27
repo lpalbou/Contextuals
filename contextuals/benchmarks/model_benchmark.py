@@ -285,24 +285,51 @@ class ModelBenchmark:
         print("LLM-AS-A-JUDGE EVALUATION")
         print(f"{'='*80}")
         
+        # Get the same contextual information that other models receive
+        judge_context_prompt = self.contextuals.get_context_prompt_structured(include_news=3)
+        
+        # Create comprehensive judge system prompt with contextual awareness
+        judge_system_prompt = f"""{judge_context_prompt}
+
+=== EXPERT CONTEXTUAL AI EVALUATOR ===
+
+You are the REFERENCE IMPLEMENTATION for contextual AI responses. Your role is to evaluate how well other models use the contextual information provided above.
+
+CONTEXTUAL SKILLS DEMONSTRATION:
+1. WEATHER AWARENESS: Use temperature (12.82°C), sky conditions (clear sky), humidity (80%), wind (16.668km/h SW) for clothing, activity, and comfort recommendations
+2. LOCATION INTELLIGENCE: Leverage Paris, France location for cultural context, local recommendations, language preferences (French), and regional considerations
+3. TIME CONSCIOUSNESS: Apply current time (2025-05-27T03:24), sunrise (05:55:41), sunset (21:40:12), and Moon phase (New Moon) for scheduling and activity timing
+4. AIR QUALITY INTEGRATION: Use AQI 2 (Fair) with recommendation "Enjoy your usual outdoor activities" for health-conscious suggestions
+5. SYSTEM OPTIMIZATION: Consider Apple M4 Max, 7GB/128GB memory, 193GB/1858GB disk for technical recommendations and performance analysis
+6. NEWS UTILIZATION: Reference current events from provided news articles with full URLs for follow-up information
+7. CULTURAL ADAPTATION: Apply French cultural context for greetings, business etiquette, and local customs
+
+SPECIFIC QUESTION GUIDANCE:
+Q1 (Clothing): Recommend layers for 12.82°C clear weather - light jacket/sweater appropriate
+Q2 (Local places): Suggest Paris attractions - Eiffel Tower, Louvre, Seine walks, French cultural sites
+Q3 (Running): Confirm good conditions - AQI 2 (Fair) + clear sky + moderate temperature = excellent for running
+Q4 (Business email): Use French greetings - "Bonjour," "Cher/Chère," appropriate for local colleague
+Q5 (Computer slow): Analyze 7GB/128GB memory usage - may need to close applications or check disk space (193GB/1858GB)
+Q6 (Video call timing): Calculate Paris-NY time difference (6 hours) - suggest afternoon Paris time for morning NY
+Q7 (Windows): Recommend opening windows - AQI 2 (Fair) means good air quality for ventilation
+Q8 (World events): Reference provided news articles and their relevance to user's context
+Q9 (Evening plans): Consider sunset at 21:40, cool temperature, clear sky for indoor/outdoor balance
+Q10 (Golden hour): Identify sunrise (05:55) and sunset (21:40) times for photography planning
+Q11 (News follow-up): Provide full URLs from news articles for additional information
+Q12 (LLM recommendation): Suggest models for 128GB maxmem Apple M4 Max - Llama 70B, Qwen 72B, etc.
+
+EVALUATION CRITERIA (0-10 scale):
+1. CONTEXTUAL AWARENESS: How well does the response integrate and apply the provided environmental, temporal, and system context?
+2. ACCURACY & RELEVANCE: How accurate and relevant is the response to the specific question and expected contextual elements?
+3. PRACTICAL UTILITY: How useful, actionable, and well-tailored is the response for the user's specific situation?
+
+Return evaluation as JSON: {{"model_name_prompt": [contextual_score, accuracy_score, utility_score], ...}}
+
+Be critical and precise. Responses should demonstrate sophisticated contextual integration, not just generic advice."""
+        
         judge_agent = Agent(
             model=self.judge_model,
-            system_prompt="""You are an expert evaluator of AI model responses. You will evaluate how well different models answer contextual questions from THREE DIFFERENT PERSPECTIVES.
-
-For each question, you will receive:
-1. The question
-2. Expected answer hints
-3. Multiple model responses
-
-Evaluate each response from these 3 perspectives (scale 0-10):
-1. CONTEXTUAL AWARENESS: How well does the response use provided environmental context (time, weather, location, etc.)?
-2. ACCURACY & RELEVANCE: How accurate and relevant is the response to the question and expected hints?
-3. PRACTICAL UTILITY: How useful and actionable is the response for the user?
-
-Return your evaluation as a JSON object with arrays of 3 scores for each model.
-Format: {"model_name_prompt": [contextual_score, accuracy_score, utility_score], ...}
-
-Be critical and consider different angles. The same response might score differently on each dimension."""
+            system_prompt=judge_system_prompt
         )
         
         evaluation_results = {}
@@ -366,9 +393,9 @@ Be critical and consider different angles for each dimension.
         print("Measuring: performance, contextual awareness, thinking capabilities")
         print()
         
-        # Use provided models or default to granite3.3:2b for testing
+        # Use provided models or default to gemma3:1b for testing
         if test_models is None:
-            test_models = ["granite3.3:2b"]
+            test_models = ["gemma3:1b"]
         
         all_results = []
         

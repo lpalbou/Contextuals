@@ -415,12 +415,14 @@ class Contextuals:
         # Extract simple information
         simple = {}
         
-        # Time - extract ISO datetime
+        # Time - extract ISO datetime with timezone information
         if "time" in all_context and "data" in all_context["time"]:
             time_data = all_context["time"]["data"]
             simple["time"] = time_data.get("iso") or time_data.get("datetime") or all_context["time"]["timestamp"]
+            simple["timezone"] = time_data.get("timezone", "UTC")
         else:
             simple["time"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            simple["timezone"] = "UTC"
         
         # User information
         if "user" in all_context and "data" in all_context["user"]:
@@ -716,7 +718,7 @@ class Contextuals:
         prompt_parts.append("CONTEXT: Real-time user environment data for personalized responses.")
         
         # Core data in compact format
-        prompt_parts.append(f"TIME: {simple_data['time']}")
+        prompt_parts.append(f"TIME: {simple_data['time']} ({simple_data['timezone']})")
         prompt_parts.append(f"USER: {simple_data['username']} ({simple_data['full_name']}) | Lang: {simple_data['language']}")
         
         # Location
@@ -776,7 +778,7 @@ class Contextuals:
         machine = simple_data['machine']
         
         compact_parts = [
-            f"CTX: {simple_data['time'][:16]}",
+            f"CTX: {simple_data['time'][:16]} {simple_data['timezone']}",
             f"SR {astro['sunrise'][:5]}",
             f"SS {astro['sunset'][:5]}",
             f"USR: {simple_data['username']} ({simple_data['full_name'][:10]}...)",
@@ -825,7 +827,7 @@ class Contextuals:
         
         # Detailed sections
         prompt_parts.append(f"TEMPORAL CONTEXT:")
-        prompt_parts.append(f"• Current time: {simple_data['time']}")
+        prompt_parts.append(f"• Current time: {simple_data['time']} ({simple_data['timezone']})")
         prompt_parts.append("")
         
         prompt_parts.append(f"USER PROFILE:")
@@ -894,7 +896,7 @@ class Contextuals:
         minimal_parts = [
             f"User: {simple_data['username']} in {loc['city']}, {loc['country']}",
             f"{weather['temp_c']}°C {weather['sky']}",
-            f"{simple_data['time'][:16]}",
+            f"{simple_data['time'][:16]} {simple_data['timezone']}",
             f"Mem: {simple_data['machine']['memory_free']:.0f}GB/{simple_data['machine']['maxmem']:.0f}GB"
         ]
         
@@ -930,6 +932,7 @@ class Contextuals:
             "location": f"{simple_data['location']['city']}, {simple_data['location']['country']}",
             "coordinates": f"{simple_data['location']['latitude']:.2f},{simple_data['location']['longitude']:.2f}",
             "time": simple_data['time'][:16],
+            "timezone": simple_data['timezone'],
             "temperature": f"{simple_data['weather']['temp_c']}°C",
             "humidity": f"{simple_data['weather']['humidity']}%",
             "wind": f"{simple_data['weather']['wind_kph']}km/h {simple_data['weather']['wind_dir'][:3]}",
