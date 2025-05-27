@@ -52,68 +52,74 @@ class ModelBenchmark:
             BenchmarkQuestion(
                 id=1,
                 question="What should I wear outside today?",
-                expected_hints=["17°", "chilly", "sweater", "light jacket", "temperature"],
+                expected_hints=["14°", "14.02°", "cool", "chilly", "sweater", "light jacket", "temperature", "clear sky"],
                 description="Weather-based clothing recommendation"
             ),
             BenchmarkQuestion(
                 id=2,
-                question="I feel like visiting a cool place today, any suggestions?",
-                expected_hints=["Paris", "France", "famous", "place", "location"],
-                description="Location-based recommendation"
+                question="I feel like visiting a cool place nearby today, any suggestions?",
+                expected_hints=["Paris", "France", "Eiffel Tower", "Louvre", "Seine", "local", "nearby", "French"],
+                description="Location-aware local recommendations"
             ),
             BenchmarkQuestion(
                 id=3,
-                question="Is it a good time to go for a run right now?",
-                expected_hints=["daylight", "not raining", "ok", "yes", "good time"],
-                description="Activity timing assessment"
+                question="Is it a good time to go for a run right now considering air quality?",
+                expected_hints=["air quality", "AQI", "Fair", "good", "outdoor activities", "enjoy", "running"],
+                description="Multi-factor activity assessment (weather + air quality)"
             ),
             BenchmarkQuestion(
                 id=4,
-                question="What's a good local greeting for a business email I'm writing?",
-                expected_hints=["Cher Monsieur", "Cher Madame", "french", "français", "plaisir"],
+                question="What's an appropriate greeting for a business email I'm writing to a local colleague?",
+                expected_hints=["Bonjour", "Cher", "Madame", "Monsieur", "French", "français", "local", "colleague"],
                 description="Cultural and linguistic appropriateness"
             ),
             BenchmarkQuestion(
                 id=5,
-                question="My computer feels slow. What might be causing this?",
-                expected_hints=["memory", "disk", "occupied", "storage", "RAM"],
-                description="System performance diagnosis"
+                question="My computer feels slow. What might be causing this based on my current system?",
+                expected_hints=["memory", "7.2GB", "free", "RAM", "disk", "193GB", "Apple M4", "macOS", "resources"],
+                description="System-aware performance diagnosis"
             ),
             BenchmarkQuestion(
                 id=6,
-                question="When would be the best time to schedule a video call with someone in New York?",
-                expected_hints=["14:50", "20h50", "time zone", "NY time", "now", "tomorrow"],
+                question="When would be the best time to schedule a video call with someone in New York today?",
+                expected_hints=["time zone", "NY", "New York", "EST", "EDT", "6 hours", "difference", "afternoon"],
                 description="Time zone and scheduling awareness"
             ),
             BenchmarkQuestion(
                 id=7,
-                question="Should I open my windows right now?",
-                expected_hints=["open", "window", "cold", "not raining", "no strong wind"],
-                description="Environmental decision"
+                question="Should I open my windows right now for fresh air?",
+                expected_hints=["air quality", "Fair", "AQI 2", "good", "fresh air", "ventilation", "outdoor"],
+                description="Environmental decision with air quality consideration"
             ),
             BenchmarkQuestion(
                 id=8,
-                question="What's happening in the world that I should know about?",
-                expected_hints=["Fed Chair Powell", "Brent Fire", "Russia", "Ukraine", "news", "power outage", "budget bill"],
-                description="Current events awareness"
+                question="What's happening in the world that might be relevant to me?",
+                expected_hints=["news", "current", "world", "relevant", "happening", "events", "today"],
+                description="Current events awareness and relevance"
             ),
             BenchmarkQuestion(
                 id=9,
-                question="Plan my evening activities based on current conditions.",
-                expected_hints=["cold", "colder", "stay inside", "temperature", "evening"],
-                description="Multi-factor activity planning"
+                question="Plan my evening activities considering all current conditions.",
+                expected_hints=["evening", "sunset", "21:40", "temperature", "14°", "cool", "indoor", "outdoor"],
+                description="Multi-factor evening activity planning"
             ),
             BenchmarkQuestion(
                 id=10,
-                question="When is the golden hour to take photos?",
-                expected_hints=["20:30", "21:00", "sunset", "05:50", "06:50", "sunrise", "golden hour", "photography"],
-                description="Photography timing"
+                question="When is the golden hour for photography today?",
+                expected_hints=["golden hour", "sunrise", "05:55", "sunset", "21:40", "photography", "light"],
+                description="Photography timing with astronomical data"
             ),
             BenchmarkQuestion(
                 id=11,
-                question="When was your knowledge cutoff ? How many months was that ?",
-                expected_hints=["months", "year", "training", "cutoff", "data"],
-                description="Model training awareness"
+                question="I want to learn more about a current news story. Can you help me find more information?",
+                expected_hints=["news", "URL", "link", "follow-up", "more information", "article", "source"],
+                description="News URL utilization and follow-up guidance"
+            ),
+            BenchmarkQuestion(
+                id=12,
+                question="Which open source large language model could I run on my machine?",
+                expected_hints=["LLM", "model", "memory", "128GB", "maxmem", "Apple M4", "local", "ollama", "recommend"],
+                description="LLM recommendation based on system specifications"
             )
         ]
         
@@ -140,11 +146,11 @@ class ModelBenchmark:
             ]
         }
         
-        # Prompt variants to test
+        # Prompt variants to test (with 3 news articles for comprehensive testing)
         self.prompt_variants = {
-            "DEFAULT": self.contextuals.get_context_prompt,
-            "STRUCTURED": self.contextuals.get_context_prompt_structured,
-            "COMPACT": self.contextuals.get_context_prompt_compact
+            "DEFAULT": lambda: self.contextuals.get_context_prompt(include_news=3),
+            "STRUCTURED": lambda: self.contextuals.get_context_prompt_structured(include_news=3),
+            "COMPACT": lambda: self.contextuals.get_context_prompt_compact(include_news=3)
         }
         
         # Judge model for evaluation

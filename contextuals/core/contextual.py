@@ -581,6 +581,7 @@ class Contextuals:
                 memory = machine_data["memory"]
                 simple["machine"]["memory_total"] = _round_number(memory.get("total_mb", 0.0) / 1024.0)  # Convert to GB
                 simple["machine"]["memory_free"] = _round_number(memory.get("free_mb", 0.0) / 1024.0)   # Convert to GB
+                simple["machine"]["maxmem"] = simple["machine"]["memory_total"]  # Alias for maximum memory
             
             # Extract disk info
             if "disk" in machine_data:
@@ -708,7 +709,7 @@ class Contextuals:
         
         # Machine context - detailed memory and disk info
         machine = simple_data['machine']
-        prompt_parts.append(f"SYSTEM: {machine['platform']}, {machine['model']}, {machine['memory_free']:.1f}GB free memory, {machine['disk_free']:.1f}GB free disk")
+        prompt_parts.append(f"SYSTEM: {machine['platform']}, {machine['model']}, {machine['memory_free']:.1f}GB free/{machine['maxmem']:.1f}GB total memory, {machine['disk_free']:.1f}GB free disk")
         
         # News if available and requested
         if simple_data['news']:
@@ -719,17 +720,16 @@ class Contextuals:
                 news_items.append(f"{title} ({url})")
             prompt_parts.append(f"NEWS: {' | '.join(news_items)}")
         
-        # Usage instructions - very concise
-        usage_parts = ["Reference this context for location-aware, time-sensitive, weather-appropriate, and culturally relevant responses. Consider user's environment, current conditions, and local context in your assistance."]
-        
-        # Add machine-specific guidance
-        usage_parts.append("Factor in system resources and platform capabilities for technical recommendations.")
+        # Context instructions - concise and natural
+        usage_parts = ["Shared implicit context: current environment, location, time, weather, and system status."]
+        usage_parts.append("Respond naturally with contextual awareness.")
+        usage_parts.append("Consider system capabilities for technical suggestions.")
         
         # Add news guidance if news is present
         if simple_data['news']:
-            usage_parts.append("Reflect on current news relevance to user's context and needs; use URLs for follow-up if needed.")
+            usage_parts.append("Reference current events when relevant; provide URLs for follow-up when helpful.")
         
-        prompt_parts.append(f"\nUSAGE: {' '.join(usage_parts)}")
+        prompt_parts.append(f"\nCONTEXT: {' '.join(usage_parts)}")
         
         return "\n".join(prompt_parts)
     
@@ -760,6 +760,7 @@ class Contextuals:
             f"SYS: {machine['platform']}",
             f"CPU: {machine['model'][:15]}",
             f"FREEMEM {machine['memory_free']:.1f}GB",
+            f"MAXMEM {machine['maxmem']:.1f}GB", 
             f"FREESPACE {machine['disk_free']:.1f}GB"
         ]
         
@@ -772,11 +773,11 @@ class Contextuals:
                 news_items.append(f"NEWS{i} {title} ({url})")
             compact_parts.extend(news_items)
         
-        # Usage instructions for COMPACT
-        usage_parts = ["Use for location/time/weather-aware responses."]
-        usage_parts.append("Consider system resources.")
+        # Context instructions for COMPACT
+        usage_parts = ["Shared implicit context."]
+        usage_parts.append("Respond with contextual awareness.")
         if simple_data['news']:
-            usage_parts.append("Consider news relevance; use URLs if needed.")
+            usage_parts.append("Reference current events when relevant.")
         
         compact_parts.append(" ".join(usage_parts))
         
@@ -841,15 +842,14 @@ class Contextuals:
                 prompt_parts.append(f"• {article['title']} ({article['source']}) - {article['url']}")
             prompt_parts.append("")
         
-        prompt_parts.append("USAGE GUIDELINES:")
-        prompt_parts.append("• Reference location for local recommendations, services, and cultural context")
-        prompt_parts.append("• Consider weather for activity suggestions and safety advice")
-        prompt_parts.append("• Use time context for scheduling and time-sensitive information")
-        prompt_parts.append("• Adapt language and cultural references to user's locale")
-        prompt_parts.append("• Factor in air quality for health-related recommendations")
-        prompt_parts.append("• Consider system resources and platform capabilities for technical recommendations")
+        prompt_parts.append("CONTEXT AWARENESS:")
+        prompt_parts.append("• Shared implicit context: location, time, weather, air quality, and system status")
+        prompt_parts.append("• Respond naturally with contextual awareness")
+        prompt_parts.append("• Provide contextually appropriate recommendations")
+        prompt_parts.append("• Consider environmental factors for activity suggestions")
+        prompt_parts.append("• Factor in system capabilities for technical recommendations")
         if simple_data['news']:
-            prompt_parts.append("• Reflect on current news relevance to user's situation and needs; use URLs for follow-up if needed")
+            prompt_parts.append("• Reference current events when relevant to the user's situation")
         
         return "\n".join(prompt_parts)
     
@@ -867,7 +867,8 @@ class Contextuals:
         minimal_parts = [
             f"User: {simple_data['username']} in {loc['city']}, {loc['country']}",
             f"{weather['temp_c']}°C {weather['sky']}",
-            f"{simple_data['time'][:16]}"
+            f"{simple_data['time'][:16]}",
+            f"Mem: {simple_data['machine']['maxmem']:.0f}GB"
         ]
         
         # Add news if requested (very minimal for MINIMAL variant)
@@ -876,10 +877,10 @@ class Contextuals:
             news_url = simple_data['news'][0]['url'][:10] + "..." if len(simple_data['news'][0]['url']) > 10 else simple_data['news'][0]['url']
             minimal_parts.append(f"News: {news_title} ({news_url})")
         
-        # Usage instructions for MINIMAL
-        usage_parts = ["Personalize responses to location/weather/time."]
+        # Context instructions for MINIMAL
+        usage_parts = ["Shared context."]
         if simple_data['news']:
-            usage_parts.append("Consider news relevance.")
+            usage_parts.append("Reference current events.")
         
         minimal_parts.append(" ".join(usage_parts))
         
@@ -915,6 +916,7 @@ class Contextuals:
             "system": simple_data['machine']['platform'],
             "cpu": simple_data['machine']['model'],
             "freemem": f"{simple_data['machine']['memory_free']:.1f}GB",
+            "maxmem": f"{simple_data['machine']['maxmem']:.1f}GB",
             "freespace": f"{simple_data['machine']['disk_free']:.1f}GB"
         }
         
@@ -928,13 +930,14 @@ class Contextuals:
         structured_parts = []
         structured_parts.append(f"CONTEXT_DATA: {context_json}")
         structured_parts.append("")
-        # Instructions for STRUCTURED
-        instructions = ["Use this context to provide location-aware, time-sensitive, weather-appropriate responses. Consider user's environment and local conditions in all assistance."]
-        instructions.append("Factor in system resources and platform capabilities for technical recommendations.")
+        # Context instructions for STRUCTURED
+        instructions = ["Shared implicit context: environment, location, time, weather, and system status."]
+        instructions.append("Respond naturally with contextual awareness.")
+        instructions.append("Consider system capabilities for technical suggestions.")
         if simple_data['news']:
-            instructions.append("Reflect on current news relevance to user's context and needs; use URLs for follow-up if needed.")
+            instructions.append("Reference current events when relevant to the user's situation.")
         
-        structured_parts.append(f"INSTRUCTIONS: {' '.join(instructions)}")
+        structured_parts.append(f"CONTEXT: {' '.join(instructions)}")
         
         return "\n".join(structured_parts)
     
