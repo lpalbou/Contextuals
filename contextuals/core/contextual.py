@@ -1,11 +1,14 @@
 """Main entry point for Contextuals library."""
 
 import datetime
-from typing import Dict, Any, Optional, Union
+import json
+from typing import Dict, Any, Optional, Union, List
+import warnings
 
 from contextuals.core.config import Config
 from contextuals.core.cache import Cache
 from contextuals.core.context_manager import ContextManager
+from contextuals.core.exceptions import MissingAPIKeyError
 from contextuals.time.time_provider import TimeProvider
 
 
@@ -62,6 +65,9 @@ class Contextuals:
         self._location = None
         self._news = None
         self._system = None
+        
+        # Track warnings to avoid duplicate warnings
+        self._warned_services = set()
     
     @property
     def time(self):
@@ -269,6 +275,15 @@ class Contextuals:
                     # Try to get weather data with graceful fallbacks if APIs are unavailable
                     try:
                         result["weather"] = self.weather.current(loc_name)
+                    except MissingAPIKeyError:
+                        # Handle missing weather API key gracefully
+                        self._warn_missing_api_key("weather", "weather data")
+                        result["weather"] = {
+                            "timestamp": response_time,
+                            "type": "weather_unavailable",
+                            "is_cached": False,
+                            "data": {"status": "unavailable", "reason": "Weather API key not configured"}
+                        }
                     except Exception as e:
                         weather_error = str(e)
                         result["weather"] = {
@@ -322,6 +337,19 @@ class Contextuals:
             # Always use world news by default for the "all" command
             try:
                 result["news"] = self.news.get_world_news()
+            except MissingAPIKeyError:
+                # Handle missing news API key gracefully
+                self._warn_missing_api_key("news", "news data")
+                result["news"] = {
+                    "timestamp": response_time,
+                    "type": "news_unavailable",
+                    "is_cached": False,
+                    "data": {
+                        "status": "unavailable", 
+                        "reason": "News API key not configured",
+                        "suggestion": "Consider using free RSS feeds: BBC (https://feeds.bbci.co.uk/news/rss.xml), Reuters, Google News"
+                    }
+                }
             except Exception as e:
                 result["news"] = {
                     "timestamp": response_time,
@@ -973,3 +1001,22 @@ class Contextuals:
             return json.dumps(data, separators=(',', ':'))
         else:
             return json.dumps(data, indent=2)
+
+    def _warn_missing_api_key(self, service: str, feature: str = None):
+        """Issue a warning for missing API key, but only once per service.
+        
+        Args:
+            service: Service name (e.g., 'weather', 'news')
+            feature: Optional specific feature that requires the API key
+        """
+        if service not in self._warned_services:
+            self._warned_services.add(service)
+            feature_text = f" for {feature}" if feature else ""
+            env_var = f"CONTEXTUALS_{service.upper()}_API_KEY"
+            
+            warning_msg = (
+                f"Missing {service} API key{feature_text}. "
+                f"Set {env_var} environment variable or pass {service}_api_key parameter. "
+                f"Using fallback data where possible."
+            )
+            warnings.warn(warning_msg, UserWarning, stacklevel=3)
