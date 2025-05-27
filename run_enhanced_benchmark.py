@@ -23,15 +23,29 @@ async def main():
     print("- Contextually-aware LLM-as-a-judge (reference implementation)")
     print("- Judge uses same contextual data as test models")
     print("- Detailed guidance on proper contextual usage")
-    print("- Testing granite3.3:2b and gemma3:1b")
+    print("- Testing 8 models: SLM (granite3.3:2b, cogito:3b, gemma3:1b)")
+    print("  MLM (granite3.3:8b, cogito:8b, gemma3:12b)")
+    print("  LLM (qwen3:30b-a3b-q4_K_M, llama4:17b-scout-16e-instruct-q4_K_M)")
     print("- All prompt variants: DEFAULT, STRUCTURED, COMPACT")
     print("- News integration with full URLs")
     print("=" * 80)
     
     benchmark = ModelBenchmark()
     
-    # Test only gemma3:1b as requested
-    test_models = ["gemma3:1b"]
+    # Test all requested models across SLM, MLM, and LLM categories
+    test_models = [
+        # Small Language Models (SLM)
+        "granite3.3:2b",
+        "cogito:3b", 
+        "gemma3:1b",
+        # Medium Language Models (MLM)
+        "granite3.3:8b",
+        "cogito:8b",
+        "gemma3:12b",
+        # Large Language Models (LLM)
+        "qwen3:30b-a3b-q4_K_M",
+        "llama4:17b-scout-16e-instruct-q4_K_M"
+    ]
     
     try:
         results, evaluations = await benchmark.run_benchmark(test_models)

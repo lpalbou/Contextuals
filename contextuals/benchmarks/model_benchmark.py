@@ -393,9 +393,16 @@ Be critical and consider different angles for each dimension.
         print("Measuring: performance, contextual awareness, thinking capabilities")
         print()
         
-        # Use provided models or default to gemma3:1b for testing
+        # Use provided models or default to comprehensive model set
         if test_models is None:
-            test_models = ["gemma3:1b"]
+            test_models = [
+                # Small Language Models (SLM)
+                "granite3.3:2b", "cogito:3b", "gemma3:1b",
+                # Medium Language Models (MLM)  
+                "granite3.3:8b", "cogito:8b", "gemma3:12b",
+                # Large Language Models (LLM)
+                "qwen3:30b-a3b-q4_K_M", "llama4:17b-scout-16e-instruct-q4_K_M"
+            ]
         
         all_results = []
         

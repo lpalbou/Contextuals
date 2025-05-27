@@ -424,6 +424,53 @@ class Contextuals:
             simple["time"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
             simple["timezone"] = "UTC"
         
+        # Try to get local timezone based on location
+        if "location" in all_context and "data" in all_context["location"]:
+            loc_data = all_context["location"]["data"]
+            country = loc_data.get("country", "").upper()
+            city = loc_data.get("name", "").split(",")[0].strip() if "name" in loc_data else ""
+            
+            # Map common locations to timezones
+            timezone_map = {
+                "FRANCE": "Europe/Paris",
+                "PARIS": "Europe/Paris",
+                "US": "America/New_York",  # Default to Eastern
+                "USA": "America/New_York",
+                "UNITED STATES": "America/New_York",
+                "GB": "Europe/London",
+                "UK": "Europe/London",
+                "UNITED KINGDOM": "Europe/London",
+                "LONDON": "Europe/London",
+                "GERMANY": "Europe/Berlin",
+                "BERLIN": "Europe/Berlin",
+                "JAPAN": "Asia/Tokyo",
+                "TOKYO": "Asia/Tokyo",
+                "CANADA": "America/Toronto",
+                "TORONTO": "America/Toronto",
+                "AUSTRALIA": "Australia/Sydney",
+                "SYDNEY": "Australia/Sydney"
+            }
+            
+            # Try to find timezone by country or city
+            detected_tz = None
+            if city.upper() in timezone_map:
+                detected_tz = timezone_map[city.upper()]
+            elif country in timezone_map:
+                detected_tz = timezone_map[country]
+            
+            if detected_tz:
+                simple["timezone"] = detected_tz
+                # Also update the time to show local time
+                try:
+                    import zoneinfo
+                    local_tz = zoneinfo.ZoneInfo(detected_tz)
+                    utc_time = datetime.datetime.fromisoformat(simple["time"].replace('Z', '+00:00'))
+                    local_time = utc_time.astimezone(local_tz)
+                    simple["time"] = local_time.isoformat()
+                except (ImportError, Exception):
+                    # If timezone conversion fails, keep UTC
+                    pass
+        
         # User information
         if "user" in all_context and "data" in all_context["user"]:
             user_data = all_context["user"]["data"]
