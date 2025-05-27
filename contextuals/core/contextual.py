@@ -744,7 +744,7 @@ class Contextuals:
             news_items = []
             for article in simple_data['news']:
                 title = article['title']
-                url = article['url'][:30] + "..." if len(article['url']) > 30 else article['url']
+                url = article['url']  # Keep full URL - must remain usable
                 news_items.append(f"{title} ({url})")
             prompt_parts.append(f"NEWS: {' | '.join(news_items)}")
         
@@ -901,7 +901,7 @@ class Contextuals:
         # Add news if requested (very minimal for MINIMAL variant)
         if simple_data['news']:
             news_title = simple_data['news'][0]['title'][:15] + "..." if len(simple_data['news'][0]['title']) > 15 else simple_data['news'][0]['title']
-            news_url = simple_data['news'][0]['url'][:10] + "..." if len(simple_data['news'][0]['url']) > 10 else simple_data['news'][0]['url']
+            news_url = simple_data['news'][0]['url']  # Keep full URL - must remain usable
             minimal_parts.append(f"News: {news_title} ({news_url})")
         
         # Context instructions for MINIMAL

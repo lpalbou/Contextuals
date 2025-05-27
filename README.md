@@ -98,12 +98,15 @@ except Exception as e:
 
 Contextuals uses multiple APIs under the hood. Some of them require API keys:
 
-### Required API Keys
+### API Keys
 
 - **Weather**: Get from [OpenWeatherMap.org](https://openweathermap.org/api)
   - Free tier provides access to current weather, 5-day forecast, and air quality
   - For 7-day forecasts and moon phases with precise data, consider subscribing to the "One Call API 3.0"
-- **News**: Get from [NewsAPI.org](https://newsapi.org/)
+- **News**: No API key required! Uses free RSS feeds from reputable sources (BBC, Reuters, Google News, AP)
+  - Completely free forever with no rate limits
+  - Supports country-specific news and category filtering
+  - Backward compatible with NewsAPI format
 
 ### Setting API Keys
 
@@ -112,14 +115,14 @@ You can set API keys in three ways:
 1. **Environment Variables**:
    ```bash
    export CONTEXTUALS_WEATHER_API_KEY="your_weather_api_key"
-   export CONTEXTUALS_NEWS_API_KEY="your_news_api_key"
+   # News API key is no longer needed - RSS feeds are used instead
    ```
 
 2. **Constructor Parameters**:
    ```python
    context = Contextuals(
-       weather_api_key="your_weather_api_key",
-       news_api_key="your_news_api_key"
+       weather_api_key="your_weather_api_key"
+       # news_api_key no longer needed - RSS feeds are used instead
    )
    ```
 
@@ -127,7 +130,7 @@ You can set API keys in three ways:
    ```python
    context = Contextuals()
    context.set_api_key("weather", "your_weather_api_key")
-   context.set_api_key("news", "your_news_api_key")
+   # context.set_api_key("news", "your_news_api_key")  # No longer needed
    ```
 
 ## Advanced Usage

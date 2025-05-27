@@ -3,9 +3,14 @@
 __version__ = "0.1.0"
 
 from contextuals.core.contextual import Contextuals
-from contextuals.benchmarks import ModelBenchmark
 
-__all__ = ["Contextuals", "ModelBenchmark"]
+# Optional benchmarks import (requires pydantic-ai)
+try:
+    from contextuals.benchmarks import ModelBenchmark
+    __all__ = ["Contextuals", "ModelBenchmark"]
+except ImportError:
+    # pydantic-ai not installed, benchmarks not available
+    __all__ = ["Contextuals"]
 
 # For backward compatibility
 ContextualCC = Contextuals
