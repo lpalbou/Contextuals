@@ -522,6 +522,24 @@ prompt = context.get_context_prompt_compact()
 - **Speed Critical**: gemma3:1b + DEFAULT (118.8 tokens/sec)
 - **Reliable Choice**: granite3.3:8b + STRUCTURED (solid performance)
 
+**💻 Memory-Constrained Recommendations:**
+
+**For systems with < 8GB RAM:**
+- **Best Choice**: `gemma3:1b` + DEFAULT variant (118.8 tokens/sec, ~2-3GB RAM)
+- **Alternative**: `gemma3:3b` + STRUCTURED variant (if available, ~4-5GB RAM)
+- **Note**: These models are surprisingly effective despite their size and provide excellent speed
+
+**For systems with < 16GB RAM:**
+- **Recommended**: `granite3.3:8b` + STRUCTURED variant (~6-8GB RAM, solid performance)
+- **Alternative**: `gemma3:12b` + STRUCTURED variant (~8-12GB RAM, good balance)
+- **Avoid**: 30B+ models which typically require 20GB+ RAM even when quantized
+
+**Memory Usage Guidelines:**
+- **1B models**: ~2-4GB RAM (excellent for laptops and development)
+- **3-8B models**: ~4-10GB RAM (good balance for most users)
+- **12B models**: ~8-16GB RAM (high quality, needs decent hardware)
+- **30B+ models**: ~20GB+ RAM (workstation/server class hardware required)
+
 See [BENCHMARK.md](docs/BENCHMARK.md) for complete empirical testing results across 8 models.
 
 ### Benchmarking
