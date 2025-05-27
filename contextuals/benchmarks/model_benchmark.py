@@ -14,9 +14,7 @@ from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
 from pathlib import Path
 
-sys.path.insert(0, os.path.abspath('.'))
-
-from contextuals import Contextuals
+from contextuals.core.contextual import Contextuals
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
@@ -450,37 +448,4 @@ Be critical and consider different angles for each dimension.
         print(f"Comprehensive results updated: {len(all_results)} total model-prompt combinations")
 
 
-async def main():
-    """Main benchmark execution."""
-    benchmark = ModelBenchmark()
-    
-    # Accept models as command line arguments, default to granite3.3:2b
-    if len(sys.argv) > 1:
-        test_models = sys.argv[1:]
-    else:
-        test_models = ["granite3.3:2b"]
-    
-    print(f"Starting benchmark with models: {', '.join(test_models)}")
-    
-    try:
-        results, evaluations = await benchmark.run_benchmark(test_models)
-        
-        if results:
-            print(f"\n{'='*80}")
-            print("BENCHMARK COMPLETE")
-            print(f"{'='*80}")
-            print(f"Tested {len(results)} model-prompt combinations")
-            print("Results saved to tests/benchmarks/")
-            if len(test_models) == 1:
-                print(f"Single model test complete. Ready to test with more models.")
-            else:
-                print("Multi-model benchmark complete.")
-        else:
-            print("No results obtained. Check Ollama connection and model availability.")
-            
-    except Exception as e:
-        print(f"Benchmark execution failed: {e}")
-
-
-if __name__ == "__main__":
-    asyncio.run(main()) 
+ 

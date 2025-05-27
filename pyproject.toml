@@ -7,6 +7,16 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/lpalbou/contextuals"
 packages = [{include = "contextuals"}]
+include = [
+    "tests/benchmarks/*.json",
+    "tests/benchmarks/*.results",
+    "docs/BENCHMARK.md",
+    "docs/PROMPT_TESTING_SUMMARY.md"
+]
+exclude = [
+    "tests/test_*.py",
+    "tests/conftest.py"
+]
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
@@ -15,9 +25,12 @@ python-dotenv = "^1.0.0"
 jsonschema = "^4.19.1"
 pytz = "^2023.3"
 argparse = "^1.4.0"
+pydantic-ai = {version = "^0.0.14", optional = true}
 
 [tool.poetry.extras]
 cli = ["argparse"]
+benchmarks = ["pydantic-ai"]
+full = ["argparse", "pydantic-ai"]
 
 [tool.poetry.scripts]
 contextuals = "contextuals.cli:main"

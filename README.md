@@ -24,11 +24,23 @@ Contextuals is a Python library designed to provide comprehensive contextual inf
 
 ## Installation
 
-The recommended way to install the library is using pip:
+### Basic Installation
 
 ```bash
+# Basic installation (core functionality only)
 pip install contextuals
+
+# With CLI support
+pip install "contextuals[cli]"
+
+# With benchmarking capabilities  
+pip install "contextuals[benchmarks]"
+
+# Full installation (CLI + benchmarks)
+pip install "contextuals[full]"
 ```
+
+### Development Installation
 
 For development purposes, you can install from the GitHub repository:
 
@@ -43,6 +55,13 @@ poetry install
 # Activate the virtual environment
 poetry shell
 ```
+
+### Installation Options
+
+- **`contextuals`**: Core library with contextual information features
+- **`contextuals[cli]`**: Adds command-line interface support
+- **`contextuals[benchmarks]`**: Adds model benchmarking capabilities (requires pydantic-ai)
+- **`contextuals[full]`**: Complete installation with all features
 
 ## Quick Start
 
@@ -253,7 +272,11 @@ Contextuals comes with a convenient command-line interface to quickly access con
 ```bash
 # Install with CLI support
 pip install "contextuals[cli]"
+```
 
+### Basic Commands
+
+```bash
 # Get current time
 contextuals time
 
@@ -290,6 +313,19 @@ contextuals location
 # Get information about a specific location
 contextuals location "Eiffel Tower"
 
+# Get system information
+contextuals system
+
+# Get user information
+contextuals user
+
+# Get machine information  
+contextuals machine
+```
+
+### News Commands
+
+```bash
 # Get news for your current location (auto-detected)
 contextuals news
 
@@ -310,31 +346,64 @@ contextuals news --search "artificial intelligence"
 
 # Show more articles in the results
 contextuals news --show 10
+```
 
+### Comprehensive Context Commands
 
-# Get all available contextual information
+```bash
+# Get all available contextual information (includes system, user, machine data)
 contextuals all
 
 # Get all contextual information as JSON
 contextuals all --format json
 
-# Get simple contextual information for LLM prompts
+# Get minified JSON (reduces size by ~20-25%)
+contextuals all --format json --minified
+
+# Get simple contextual information optimized for LLM prompts
 contextuals simple
 
 # Get simple contextual information as markdown
 contextuals simple --format markdown
 
-# Get optimized context prompt for LLM system messages
+# Get minified simple JSON for LLM prompts
+contextuals simple --format json --minified
+```
+
+### AI-Optimized Prompt Commands
+
+```bash
+# Get optimized context prompt for LLM system messages (DEFAULT variant)
 contextuals prompt
 
 # Get different prompt variants
-contextuals prompt --variant compact    # Most efficient
-contextuals prompt --variant minimal    # Ultra-compact
-contextuals prompt --variant structured # JSON-like format
-contextuals prompt --variant detailed   # Comprehensive
+contextuals prompt --variant structured  # Best overall quality (8.21/10) - RECOMMENDED
+contextuals prompt --variant default     # Best speed-quality balance (36.35 tok/s)
+contextuals prompt --variant compact     # Most token-efficient (~28 tokens)
+contextuals prompt --variant minimal     # Ultra-compact (~20 tokens)
+contextuals prompt --variant detailed    # Comprehensive context (~219 tokens)
+```
 
-# Get help
+### Benchmarking Commands
+
+```bash
+# Install with benchmarking support
+pip install "contextuals[benchmarks]"
+
+# Run benchmark on specific models
+python -m contextuals.benchmarks.cli gemma3:1b qwen3:30b-a3b-q4_K_M
+
+# Analyze existing benchmark results
+python -c "from contextuals.benchmarks import analyze_results; analyze_results()"
+```
+
+### Help and Information
+
+```bash
+# Get help for any command
 contextuals --help
+contextuals all --help
+contextuals prompt --help
 ```
 
 ## Integration with Other Applications
@@ -355,6 +424,11 @@ time_info = context.time.now(format_as_json=True)
 weather_info = context.weather.current("London")
 location_info = context.location.get("London")
 news_info = context.news.get_country_news("gb")
+
+# Get comprehensive context for AI applications
+all_context = context.get_all_context()
+simple_context = context.get_simple_context()
+ai_prompt = context.get_context_prompt_structured()  # Recommended variant
 ```
 
 ### Web Application Integration
@@ -423,7 +497,68 @@ Based on objective testing with Qwen 3 30B, the prompt variants ranked as follow
 4. **MINIMAL** (0.930 score) - Most token-efficient (4.650 score/100 tokens)
 5. **DETAILED** (0.910 score) - Comprehensive but token-heavy
 
-**Recommendation:** Use `STRUCTURED` variant for most applications as it provides excellent contextual awareness with high token efficiency.
+**Recommendations Based on Empirical Testing:**
+
+**🏆 Best Overall Quality:** Use `STRUCTURED` variant (8.21/10 average score)
+```python
+prompt = context.get_context_prompt_structured()
+```
+
+**🚀 Best Speed-Quality Balance:** Use `DEFAULT` variant (36.35 tokens/sec)
+```python
+prompt = context.get_context_prompt()  # DEFAULT variant
+```
+
+**💰 Most Token-Efficient:** Use `COMPACT` variant (7.17/10 score, minimal tokens)
+```python
+prompt = context.get_context_prompt_compact()
+```
+
+**🎯 Recommended Model Combinations (from benchmark testing):**
+- **Premium Quality**: qwen3:30b-a3b-q4_K_M + STRUCTURED (8.5/10, thinking capabilities)
+- **Production Balance**: gemma3:12b + STRUCTURED (8.67/10, good speed)
+- **Speed Critical**: gemma3:1b + any variant (118.8 tokens/sec)
+- **Reliable Choice**: granite3.3:8b + STRUCTURED (solid performance)
+
+See [BENCHMARK.md](docs/BENCHMARK.md) for complete empirical testing results across 7 models.
+
+### Benchmarking
+
+The library includes a comprehensive benchmarking system to evaluate prompt effectiveness across different models:
+
+```python
+from contextuals import ModelBenchmark
+import asyncio
+
+# Run benchmark programmatically
+async def run_benchmark():
+    benchmark = ModelBenchmark()
+    results, evaluations = await benchmark.run_benchmark(["gemma3:1b", "qwen3:30b-a3b-q4_K_M"])
+    return results, evaluations
+
+# Analyze results
+from contextuals.benchmarks import analyze_results
+analyze_results()  # Processes comprehensive_results.json
+
+# Or use the CLI
+# python -m contextuals.benchmarks.cli gemma3:1b qwen3:30b-a3b-q4_K_M
+```
+
+**Benchmark Features:**
+- Tests DEFAULT, STRUCTURED, and COMPACT prompt variants
+- Uses LLM-as-a-judge evaluation with multi-perspective scoring
+- Measures contextual awareness, accuracy, and practical utility
+- Detects thinking capabilities in models
+- Saves detailed results for analysis
+- Provides empirical recommendations for production use
+
+**Key Findings from 7-Model Benchmark:**
+- **STRUCTURED prompt variant wins** with 8.21/10 average score
+- **qwen3:30b-a3b-q4_K_M** shows superior performance with thinking capabilities
+- **Contextual prompts provide measurable benefits** across all model sizes
+- **Token efficiency matters**: STRUCTURED offers best quality-efficiency balance
+
+See [BENCHMARK.md](docs/BENCHMARK.md) for comprehensive results and recommendations.
 
 ## Error Handling and Fallbacks
 
