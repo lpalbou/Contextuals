@@ -58,8 +58,8 @@ poetry shell
 
 ### Installation Options
 
-- **`contextuals`**: Core library with contextual information features
-- **`contextuals[cli]`**: Adds command-line interface support
+- **`contextuals`**: Core library with contextual information features (includes feedparser for news)
+- **`contextuals[cli]`**: Adds command-line interface support (same as core - CLI is always included)
 - **`contextuals[benchmarks]`**: Adds model benchmarking capabilities (requires pydantic-ai)
 - **`contextuals[full]`**: Complete installation with all features
 
@@ -107,6 +107,7 @@ Contextuals uses multiple APIs under the hood. Some of them require API keys:
   - Completely free forever with no rate limits
   - Supports country-specific news and category filtering
   - Backward compatible with NewsAPI format
+  - Requires `feedparser` dependency (automatically installed)
 
 ### Setting API Keys
 
@@ -493,37 +494,35 @@ simple_markdown = context.get_simple_context_markdown()
 ```
 
 **Empirical Testing Results:**
-Based on objective testing with Qwen 3 30B, the prompt variants ranked as follows:
-1. **DEFAULT** (0.980 score) - Best overall contextual awareness
-2. **STRUCTURED** (0.980 score) - Highest token efficiency (1.849 score/100 tokens)
-3. **COMPACT** (0.960 score) - Best balance for production use
-4. **MINIMAL** (0.930 score) - Most token-efficient (4.650 score/100 tokens)
-5. **DETAILED** (0.910 score) - Comprehensive but token-heavy
+Based on comprehensive testing across 8 language models with LLM-as-a-judge evaluation, the prompt variants ranked as follows:
+1. **STRUCTURED** (7.18/10 score) - Best overall quality with JSON-like format
+2. **DEFAULT** (6.56/10 score) - Good balance with natural language format  
+3. **COMPACT** (5.52/10 score) - Token-efficient but slower than expected
 
 **Recommendations Based on Empirical Testing:**
 
-**🏆 Best Overall Quality:** Use `STRUCTURED` variant (8.21/10 average score)
+**🏆 Best Overall Quality:** Use `STRUCTURED` variant (7.18/10 average score)
 ```python
 prompt = context.get_context_prompt_structured()
 ```
 
-**🚀 Best Speed-Quality Balance:** Use `DEFAULT` variant (36.35 tokens/sec)
+**🚀 Best Speed-Quality Balance:** Use `DEFAULT` variant (59.2 tokens/sec with qwen3:30b)
 ```python
 prompt = context.get_context_prompt()  # DEFAULT variant
 ```
 
-**💰 Most Token-Efficient:** Use `COMPACT` variant (7.17/10 score, minimal tokens)
+**💰 Most Token-Efficient:** Use `COMPACT` variant (~100 tokens, note: speed paradox)
 ```python
 prompt = context.get_context_prompt_compact()
 ```
 
 **🎯 Recommended Model Combinations (from benchmark testing):**
-- **Premium Quality**: qwen3:30b-a3b-q4_K_M + STRUCTURED (8.5/10, thinking capabilities)
-- **Production Balance**: gemma3:12b + STRUCTURED (8.67/10, good speed)
-- **Speed Critical**: gemma3:1b + any variant (118.8 tokens/sec)
+- **Premium Quality**: qwen3:30b-a3b-q4_K_M + STRUCTURED (thinking capabilities)
+- **Production Balance**: gemma3:12b + STRUCTURED (good speed)
+- **Speed Critical**: gemma3:1b + DEFAULT (118.8 tokens/sec)
 - **Reliable Choice**: granite3.3:8b + STRUCTURED (solid performance)
 
-See [BENCHMARK.md](docs/BENCHMARK.md) for complete empirical testing results across 7 models.
+See [BENCHMARK.md](docs/BENCHMARK.md) for complete empirical testing results across 8 models.
 
 ### Benchmarking
 
@@ -555,11 +554,12 @@ analyze_results()  # Processes comprehensive_results.json
 - Saves detailed results for analysis
 - Provides empirical recommendations for production use
 
-**Key Findings from 7-Model Benchmark:**
-- **STRUCTURED prompt variant wins** with 8.21/10 average score
+**Key Findings from 8-Model Benchmark:**
+- **STRUCTURED prompt variant wins** with 7.18/10 average score
 - **qwen3:30b-a3b-q4_K_M** shows superior performance with thinking capabilities
 - **Contextual prompts provide measurable benefits** across all model sizes
 - **Token efficiency matters**: STRUCTURED offers best quality-efficiency balance
+- **COMPACT variant shows speed paradox**: Slower than expected despite fewer tokens
 
 See [BENCHMARK.md](docs/BENCHMARK.md) for comprehensive results and recommendations.
 

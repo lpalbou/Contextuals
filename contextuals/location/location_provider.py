@@ -241,7 +241,7 @@ class LocationProvider:
                 params["key"] = api_key
             
             headers = {
-                "User-Agent": "Contextuals/0.1.0",  # Required for Nominatim
+                "User-Agent": "Contextuals/0.2.0",  # Required for Nominatim
             }
             
             response = requests.get(api_url, params=params, headers=headers, timeout=10)
@@ -343,7 +343,7 @@ class LocationProvider:
                 params["key"] = api_key
             
             headers = {
-                "User-Agent": "Contextuals/0.1.0",  # Required for Nominatim
+                "User-Agent": "Contextuals/0.2.0",  # Required for Nominatim
             }
             
             response = requests.get(api_url, params=params, headers=headers, timeout=10)
@@ -495,7 +495,7 @@ class LocationProvider:
                 params["key"] = api_key
             
             headers = {
-                "User-Agent": "Contextuals/0.1.0",  # Required for Nominatim
+                "User-Agent": "Contextuals/0.2.0",  # Required for Nominatim
             }
             
             response = requests.get(api_url, params=params, headers=headers, timeout=10)

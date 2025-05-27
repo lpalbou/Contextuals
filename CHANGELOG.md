@@ -5,7 +5,27 @@ All notable changes to the Contextuals library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - 2025-01-26
+## [0.2.0] - 2025-05-27
+
+### 🐛 Bug Fixes
+- **Fixed COMPACT prompt user name truncation**: Removed 10-character limit on full names in COMPACT variant
+- **Corrected benchmark documentation**: Updated BENCHMARK.md with actual test results and correct prompt examples
+- **Updated token counts**: Corrected prompt token estimates based on real measurements
+
+### 📊 Documentation Updates
+- **Rewritten BENCHMARK.md**: Based solely on actual test results from `tests/benchmarks`
+- **Updated README.md**: Corrected all benchmark scores, model recommendations, and examples
+- **Accurate empirical testing results**: Fixed scores from theoretical to actual measured performance
+- **Speed paradox documentation**: Noted unexpected COMPACT variant performance characteristics
+
+### 🔧 Technical Improvements
+- **Version consistency**: Updated all version references across codebase
+- **User-Agent headers**: Updated to reflect current version in API calls
+- **Package metadata**: Synchronized version across pyproject.toml and __init__.py
+
+---
+
+## [0.1.0] - 2025-01-27
 
 ### 🎯 Major Features Added
 
@@ -32,9 +52,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### AI-Optimized Prompt System
 - **Created `contextuals prompt` command** with 5 specialized variants
-- **DEFAULT prompt**: Comprehensive context with detailed formatting (~128 tokens)
-- **STRUCTURED prompt**: Clean JSON-like format with essential data (~53 tokens) - **WINNER**
-- **COMPACT prompt**: Ultra-efficient context in minimal space (~28 tokens)
+- **DEFAULT prompt**: Comprehensive context with detailed formatting (~150 tokens)
+- **STRUCTURED prompt**: Clean JSON-like format with essential data (~120 tokens) - **WINNER**
+- **COMPACT prompt**: Ultra-efficient context in minimal space (~100 tokens)
 - **MINIMAL prompt**: Essential context only (~20 tokens)
 - **DETAILED prompt**: Rich comprehensive context (~219 tokens)
 - **Programmatic access**: `get_context_prompt_*()` methods for each variant
@@ -56,11 +76,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Large Language Models (LLM)**: qwen3:30b-a3b-q4_K_M (with thinking capabilities)
 
 #### Key Benchmark Findings
-- **STRUCTURED prompt variant emerges as winner** with 8.21/10 average score
+- **STRUCTURED prompt variant emerges as winner** with 7.18/10 average score
 - **qwen3:30b-a3b-q4_K_M demonstrates superior performance** across all metrics
 - **Thinking capabilities provide significant advantages** when available
 - **Contextual prompts provide measurable benefits** across all model sizes
 - **Token efficiency matters**: STRUCTURED offers best quality-efficiency balance
+- **COMPACT variant shows unexpected speed issues** - slower than DEFAULT despite fewer tokens
 
 #### Benchmark Infrastructure
 - **ModelBenchmark class**: `from contextuals import ModelBenchmark`
@@ -74,24 +95,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Based on empirical testing across 7 models with 11 contextual questions:
 
 #### **🏆 Best Overall Quality**
-- **STRUCTURED prompt variant** (8.21/10 average score)
+- **STRUCTURED prompt variant** (7.18/10 average score)
 - **Usage**: `context.get_context_prompt_structured()`
 - **Best for**: Production applications requiring high-quality contextual understanding
 
 #### **🚀 Best Speed-Quality Balance** 
-- **DEFAULT prompt variant** (36.35 tokens/sec)
+- **DEFAULT prompt variant** (59.2 tokens/sec with qwen3:30b)
 - **Usage**: `context.get_context_prompt()`
 - **Best for**: Speed-critical applications with moderate quality requirements
 
 #### **💰 Most Token-Efficient**
-- **COMPACT prompt variant** (7.17/10 score, ~28 tokens)
+- **COMPACT prompt variant** (~100 tokens, but slower than expected)
 - **Usage**: `context.get_context_prompt_compact()`
-- **Best for**: Token-constrained or cost-sensitive applications
+- **Best for**: Token-constrained applications (note: speed paradox identified)
 
 #### **🎯 Recommended Model Combinations**
-- **Premium Quality**: qwen3:30b-a3b-q4_K_M + STRUCTURED (8.5/10, thinking capabilities)
-- **Production Balance**: gemma3:12b + STRUCTURED (8.67/10, good speed)
-- **Speed Critical**: gemma3:1b + any variant (118.8 tokens/sec)
+- **Premium Quality**: qwen3:30b-a3b-q4_K_M + STRUCTURED (thinking capabilities)
+- **Production Balance**: gemma3:12b + STRUCTURED (good speed)
+- **Speed Critical**: gemma3:1b + DEFAULT (118.8 tokens/sec)
 - **Reliable Choice**: granite3.3:8b + STRUCTURED (solid performance)
 
 ### 🛠️ Technical Improvements
@@ -111,6 +132,12 @@ Based on empirical testing across 7 models with 11 contextual questions:
 - **Enhanced help system**: Detailed help for all commands and options
 - **Consistent formatting**: Pretty-print, JSON, and compact output modes
 - **Error reporting**: Clear error messages and troubleshooting guidance
+
+#### Prompt Quality Improvements
+- **Fixed COMPACT prompt user name truncation**: No longer truncates full names in COMPACT variant
+- **Updated BENCHMARK.md**: Rewritten based on actual test results from `tests/benchmarks`
+- **Corrected prompt examples**: All documentation now reflects actual prompt outputs
+- **Accurate token counts**: Updated token estimates based on real prompt measurements
 
 ### 📚 Documentation
 
@@ -134,6 +161,8 @@ Based on empirical testing across 7 models with 11 contextual questions:
 - Fixed missing system information in `get_all_context()` method
 - Improved error handling for missing API keys
 - Enhanced fallback mechanisms for offline usage
+- **Fixed COMPACT prompt user name truncation**: Removed 10-character limit on full names
+- **Corrected benchmark documentation**: Updated BENCHMARK.md with actual test results and correct prompt examples
 
 ### 🚀 Performance Improvements
 - Minified JSON reduces output size by 20-25%

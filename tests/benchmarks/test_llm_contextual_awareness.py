@@ -13,7 +13,7 @@ from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 from pydantic import BaseModel
 
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../..'))
 
 from contextuals import Contextuals
 from pydantic_ai import Agent
