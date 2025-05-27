@@ -1,12 +1,29 @@
 """Main entry point for Contextuals library."""
 
 import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Union
 
 from contextuals.core.config import Config
 from contextuals.core.cache import Cache
 from contextuals.core.context_manager import ContextManager
 from contextuals.time.time_provider import TimeProvider
+
+
+def _round_number(value: Union[int, float, None], precision: int = 3) -> Union[int, float, None]:
+    """Round a number to specified precision.
+    
+    Args:
+        value: Number to round
+        precision: Number of decimal places
+        
+    Returns:
+        Rounded number or None if input is None
+    """
+    if value is None:
+        return None
+    if isinstance(value, int):
+        return value
+    return round(float(value), precision)
 
 
 class Contextuals:
@@ -205,7 +222,14 @@ class Contextuals:
             # Try to get current location first from context manager (cached)
             current_location = self.context_manager.get_current_location()
             if current_location:
-                result["location"] = current_location
+                # Context manager returns raw location data, so we need to wrap it
+                result["location"] = {
+                    "timestamp": response_time,
+                    "request_time": response_time,
+                    "type": "current_location",
+                    "is_cached": True,
+                    "data": current_location
+                }
             else:
                 # Otherwise, try to detect location (may need internet)
                 try:
@@ -348,8 +372,11 @@ class Contextuals:
         
         return result
     
-    def get_simple_context(self) -> Dict[str, Any]:
+    def get_simple_context(self, include_news: int = 0) -> Dict[str, Any]:
         """Get simple contextual information suitable for LLM system prompts.
+        
+        Args:
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
         
         Returns:
             Dictionary with simple contextual information.
@@ -394,11 +421,11 @@ class Contextuals:
             if "coordinates" in loc_data:
                 coords = loc_data["coordinates"]
                 if "latitude" in coords and "longitude" in coords:
-                    simple["location"]["latitude"] = float(coords["latitude"])
-                    simple["location"]["longitude"] = float(coords["longitude"])
+                    simple["location"]["latitude"] = _round_number(coords["latitude"])
+                    simple["location"]["longitude"] = _round_number(coords["longitude"])
             elif "lat" in loc_data and "lon" in loc_data:
-                simple["location"]["latitude"] = float(loc_data["lat"])
-                simple["location"]["longitude"] = float(loc_data["lon"])
+                simple["location"]["latitude"] = _round_number(loc_data["lat"])
+                simple["location"]["longitude"] = _round_number(loc_data["lon"])
             
             if "country" in loc_data:
                 simple["location"]["country"] = loc_data["country"]
@@ -432,12 +459,12 @@ class Contextuals:
         
         if "weather" in all_context and "data" in all_context["weather"]:
             weather_data = all_context["weather"]["data"]
-            simple["weather"]["temp_c"] = weather_data.get("temp_c", 0.0)
-            simple["weather"]["cloud"] = weather_data.get("cloud", 0)
-            simple["weather"]["wind_kph"] = weather_data.get("wind_kph", 0.0)
+            simple["weather"]["temp_c"] = _round_number(weather_data.get("temp_c", 0.0))
+            simple["weather"]["cloud"] = weather_data.get("cloud", 0)  # Integer, no rounding needed
+            simple["weather"]["wind_kph"] = _round_number(weather_data.get("wind_kph", 0.0))
             simple["weather"]["wind_dir"] = weather_data.get("wind_dir", "unknown")
-            simple["weather"]["humidity"] = weather_data.get("humidity", 0)
-            simple["weather"]["visibility"] = weather_data.get("visibility", 0)
+            simple["weather"]["humidity"] = weather_data.get("humidity", 0)  # Integer, no rounding needed
+            simple["weather"]["visibility"] = weather_data.get("visibility", 0)  # Integer, no rounding needed
             
             # Extract sky condition
             if "condition" in weather_data and "text" in weather_data["condition"]:
@@ -475,13 +502,13 @@ class Contextuals:
             # Extract pollutants
             if "pollutants" in aq_data:
                 pollutants = aq_data["pollutants"]
-                simple["air_quality"]["pollutants"]["co"] = pollutants.get("co", 0.0)
-                simple["air_quality"]["pollutants"]["o3"] = pollutants.get("o3", 0.0)
-                simple["air_quality"]["pollutants"]["no2"] = pollutants.get("no2", 0.0)
-                simple["air_quality"]["pollutants"]["so2"] = pollutants.get("so2", 0.0)
-                simple["air_quality"]["pollutants"]["pm2_5"] = pollutants.get("pm2_5", 0.0)
-                simple["air_quality"]["pollutants"]["pm10"] = pollutants.get("pm10", 0.0)
-                simple["air_quality"]["pollutants"]["nh3"] = pollutants.get("nh3", 0.0)
+                simple["air_quality"]["pollutants"]["co"] = _round_number(pollutants.get("co", 0.0))
+                simple["air_quality"]["pollutants"]["o3"] = _round_number(pollutants.get("o3", 0.0))
+                simple["air_quality"]["pollutants"]["no2"] = _round_number(pollutants.get("no2", 0.0))
+                simple["air_quality"]["pollutants"]["so2"] = _round_number(pollutants.get("so2", 0.0))
+                simple["air_quality"]["pollutants"]["pm2_5"] = _round_number(pollutants.get("pm2_5", 0.0))
+                simple["air_quality"]["pollutants"]["pm10"] = _round_number(pollutants.get("pm10", 0.0))
+                simple["air_quality"]["pollutants"]["nh3"] = _round_number(pollutants.get("nh3", 0.0))
             
             # Extract AQI
             if "aqi" in aq_data:
@@ -519,13 +546,14 @@ class Contextuals:
         
         # News information (simplified to empty list)
         simple["news"] = []
-        if "news" in all_context and "data" in all_context["news"] and "articles" in all_context["news"]["data"]:
-            # Keep only essential info for top 3 articles
-            articles = all_context["news"]["data"]["articles"][:3]
+        if include_news > 0 and "news" in all_context and "data" in all_context["news"] and "articles" in all_context["news"]["data"]:
+            # Keep only essential info for requested number of articles
+            articles = all_context["news"]["data"]["articles"][:include_news]
             for article in articles:
                 simple["news"].append({
                     "title": article.get("title", ""),
-                    "source": article.get("source", {}).get("name", "")
+                    "source": article.get("source", {}).get("name", ""),
+                    "url": article.get("url", "")
                 })
         
         # Machine information
@@ -551,24 +579,27 @@ class Contextuals:
             # Extract memory info
             if "memory" in machine_data:
                 memory = machine_data["memory"]
-                simple["machine"]["memory_total"] = memory.get("total_mb", 0.0) / 1024.0  # Convert to GB
-                simple["machine"]["memory_free"] = memory.get("free_mb", 0.0) / 1024.0   # Convert to GB
+                simple["machine"]["memory_total"] = _round_number(memory.get("total_mb", 0.0) / 1024.0)  # Convert to GB
+                simple["machine"]["memory_free"] = _round_number(memory.get("free_mb", 0.0) / 1024.0)   # Convert to GB
             
             # Extract disk info
             if "disk" in machine_data:
                 disk = machine_data["disk"]
-                simple["machine"]["disk_total"] = disk.get("total_gb", 0.0)
-                simple["machine"]["disk_free"] = disk.get("free_gb", 0.0)
+                simple["machine"]["disk_total"] = _round_number(disk.get("total_gb", 0.0))
+                simple["machine"]["disk_free"] = _round_number(disk.get("free_gb", 0.0))
         
         return simple
     
-    def get_simple_context_markdown(self) -> str:
+    def get_simple_context_markdown(self, include_news: int = 0) -> str:
         """Get simple contextual information formatted as Markdown.
+        
+        Args:
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
         
         Returns:
             Markdown-formatted string with simple contextual information.
         """
-        simple = self.get_simple_context()
+        simple = self.get_simple_context(include_news=include_news)
         
         md_lines = []
         md_lines.append("# Contextual Information")
@@ -625,7 +656,7 @@ class Contextuals:
         if simple['news']:
             md_lines.append("## Recent News")
             for i, article in enumerate(simple['news'], 1):
-                md_lines.append(f"{i}. **{article['title']}** _{article['source']}_")
+                md_lines.append(f"{i}. **{article['title']}** _{article['source']}_ - [{article['url']}]({article['url']})")
             md_lines.append("")
         
         # Machine
@@ -638,13 +669,16 @@ class Contextuals:
         
         return "\n".join(md_lines)
     
-    def get_context_prompt(self) -> str:
+    def get_context_prompt(self, include_news: int = 3) -> str:
         """Get contextual information formatted as an optimized LLM system prompt.
+        
+        Args:
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
         
         Returns:
             Optimized prompt string with contextual information for LLM usage.
         """
-        simple_data = self.get_simple_context()
+        simple_data = self.get_simple_context(include_news=include_news)
         
         # Create token-efficient prompt
         prompt_parts = []
@@ -672,42 +706,89 @@ class Contextuals:
         astro = simple_data['astronomy']
         prompt_parts.append(f"SUN: Rise {astro['sunrise']}, Set {astro['sunset']} | Moon: {astro['phase_description']}")
         
-        # Machine context
+        # Machine context - detailed memory and disk info
         machine = simple_data['machine']
-        prompt_parts.append(f"SYSTEM: {machine['platform']}, {machine['model']}, {machine['memory_free']:.0f}GB free")
+        prompt_parts.append(f"SYSTEM: {machine['platform']}, {machine['model']}, {machine['memory_free']:.1f}GB free memory, {machine['disk_free']:.1f}GB free disk")
         
-        # News if available
+        # News if available and requested
         if simple_data['news']:
-            news_titles = [article['title'][:50] + "..." if len(article['title']) > 50 else article['title'] 
-                          for article in simple_data['news'][:2]]
-            prompt_parts.append(f"NEWS: {' | '.join(news_titles)}")
+            news_items = []
+            for article in simple_data['news']:
+                title = article['title']
+                url = article['url'][:30] + "..." if len(article['url']) > 30 else article['url']
+                news_items.append(f"{title} ({url})")
+            prompt_parts.append(f"NEWS: {' | '.join(news_items)}")
         
         # Usage instructions - very concise
-        prompt_parts.append("\nUSAGE: Reference this context for location-aware, time-sensitive, weather-appropriate, and culturally relevant responses. Consider user's environment, current conditions, and local context in your assistance.")
+        usage_parts = ["Reference this context for location-aware, time-sensitive, weather-appropriate, and culturally relevant responses. Consider user's environment, current conditions, and local context in your assistance."]
+        
+        # Add machine-specific guidance
+        usage_parts.append("Factor in system resources and platform capabilities for technical recommendations.")
+        
+        # Add news guidance if news is present
+        if simple_data['news']:
+            usage_parts.append("Reflect on current news relevance to user's context and needs; use URLs for follow-up if needed.")
+        
+        prompt_parts.append(f"\nUSAGE: {' '.join(usage_parts)}")
         
         return "\n".join(prompt_parts)
     
-    def get_context_prompt_compact(self) -> str:
-        """Get ultra-compact contextual prompt for token efficiency."""
-        simple_data = self.get_simple_context()
+    def get_context_prompt_compact(self, include_news: int = 3) -> str:
+        """Get ultra-compact contextual prompt for token efficiency.
         
-        # Ultra-compact format
+        Args:
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
+        """
+        simple_data = self.get_simple_context(include_news=include_news)
+        
+        # Ultra-compact format with all essential information
         loc = simple_data['location']
         weather = simple_data['weather']
+        astro = simple_data['astronomy']
+        machine = simple_data['machine']
         
         compact_parts = [
             f"CTX: {simple_data['time'][:16]}",
-            f"USR: {simple_data['username']} | {loc['city']},{loc['country']}",
-            f"ENV: {weather['temp_c']}°C {weather['sky']} | AQI:{simple_data['air_quality']['aqi']['value']}",
-            f"SYS: {simple_data['machine']['platform'][:15]}",
-            "Use for location/time/weather-aware responses."
+            f"SR {astro['sunrise'][:5]}",
+            f"SS {astro['sunset'][:5]}",
+            f"USR: {simple_data['username']} ({simple_data['full_name'][:10]}...)",
+            f"LANG: {simple_data['language'][:5]}",
+            f"LOC: {loc['city']},{loc['country']} ({loc['latitude']:.2f},{loc['longitude']:.2f})",
+            f"ENV: {weather['temp_c']}°C {weather['sky']} {weather['humidity']}% {weather['wind_kph']}km/h {weather['wind_dir']}",
+            f"AQI:{simple_data['air_quality']['aqi']['value']} ({simple_data['air_quality']['aqi']['description'][:4]})",
+            f"MOON: {simple_data['astronomy']['phase_description'][:8]}",
+            f"SYS: {machine['platform']}",
+            f"CPU: {machine['model'][:15]}",
+            f"FREEMEM {machine['memory_free']:.1f}GB",
+            f"FREESPACE {machine['disk_free']:.1f}GB"
         ]
+        
+        # Add news if requested (only compress titles, keep URLs full for COMPACT)
+        if simple_data['news']:
+            news_items = []
+            for i, article in enumerate(simple_data['news'], 1):
+                title = article['title'][:25] + "..." if len(article['title']) > 25 else article['title']
+                url = article['url']  # Keep full URL - must remain usable
+                news_items.append(f"NEWS{i} {title} ({url})")
+            compact_parts.extend(news_items)
+        
+        # Usage instructions for COMPACT
+        usage_parts = ["Use for location/time/weather-aware responses."]
+        usage_parts.append("Consider system resources.")
+        if simple_data['news']:
+            usage_parts.append("Consider news relevance; use URLs if needed.")
+        
+        compact_parts.append(" ".join(usage_parts))
         
         return " | ".join(compact_parts)
     
-    def get_context_prompt_detailed(self) -> str:
-        """Get detailed contextual prompt with comprehensive information."""
-        simple_data = self.get_simple_context()
+    def get_context_prompt_detailed(self, include_news: int = 3) -> str:
+        """Get detailed contextual prompt with comprehensive information.
+        
+        Args:
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
+        """
+        simple_data = self.get_simple_context(include_news=include_news)
         
         prompt_parts = []
         prompt_parts.append("=== CONTEXTUAL INFORMATION ===")
@@ -746,10 +827,18 @@ class Contextuals:
         prompt_parts.append(f"• Moon Phase: {astro['phase_description']}")
         prompt_parts.append("")
         
+        machine = simple_data['machine']
+        prompt_parts.append(f"SYSTEM INFORMATION:")
+        prompt_parts.append(f"• Platform: {machine['platform']}")
+        prompt_parts.append(f"• Model: {machine['model']}")
+        prompt_parts.append(f"• Memory: {machine['memory_free']:.1f}GB free / {machine['memory_total']:.1f}GB total")
+        prompt_parts.append(f"• Disk: {machine['disk_free']:.1f}GB free / {machine['disk_total']:.1f}GB total")
+        prompt_parts.append("")
+        
         if simple_data['news']:
             prompt_parts.append(f"CURRENT NEWS CONTEXT:")
-            for i, article in enumerate(simple_data['news'][:3], 1):
-                prompt_parts.append(f"• {article['title']} ({article['source']})")
+            for i, article in enumerate(simple_data['news'], 1):
+                prompt_parts.append(f"• {article['title']} ({article['source']}) - {article['url']}")
             prompt_parts.append("")
         
         prompt_parts.append("USAGE GUIDELINES:")
@@ -758,34 +847,94 @@ class Contextuals:
         prompt_parts.append("• Use time context for scheduling and time-sensitive information")
         prompt_parts.append("• Adapt language and cultural references to user's locale")
         prompt_parts.append("• Factor in air quality for health-related recommendations")
+        prompt_parts.append("• Consider system resources and platform capabilities for technical recommendations")
+        if simple_data['news']:
+            prompt_parts.append("• Reflect on current news relevance to user's situation and needs; use URLs for follow-up if needed")
         
         return "\n".join(prompt_parts)
     
-    def get_context_prompt_minimal(self) -> str:
-        """Get minimal contextual prompt for extreme token efficiency."""
-        simple_data = self.get_simple_context()
+    def get_context_prompt_minimal(self, include_news: int = 3) -> str:
+        """Get minimal contextual prompt for extreme token efficiency.
+        
+        Args:
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
+        """
+        simple_data = self.get_simple_context(include_news=include_news)
         
         loc = simple_data['location']
         weather = simple_data['weather']
         
-        return f"User: {simple_data['username']} in {loc['city']}, {loc['country']} | {weather['temp_c']}°C {weather['sky']} | {simple_data['time'][:16]} | Personalize responses to location/weather/time."
-    
-    def get_context_prompt_structured(self) -> str:
-        """Get structured contextual prompt in JSON-like format."""
-        simple_data = self.get_simple_context()
+        minimal_parts = [
+            f"User: {simple_data['username']} in {loc['city']}, {loc['country']}",
+            f"{weather['temp_c']}°C {weather['sky']}",
+            f"{simple_data['time'][:16]}"
+        ]
         
-        # Create structured format
+        # Add news if requested (very minimal for MINIMAL variant)
+        if simple_data['news']:
+            news_title = simple_data['news'][0]['title'][:15] + "..." if len(simple_data['news'][0]['title']) > 15 else simple_data['news'][0]['title']
+            news_url = simple_data['news'][0]['url'][:10] + "..." if len(simple_data['news'][0]['url']) > 10 else simple_data['news'][0]['url']
+            minimal_parts.append(f"News: {news_title} ({news_url})")
+        
+        # Usage instructions for MINIMAL
+        usage_parts = ["Personalize responses to location/weather/time."]
+        if simple_data['news']:
+            usage_parts.append("Consider news relevance.")
+        
+        minimal_parts.append(" ".join(usage_parts))
+        
+        return " | ".join(minimal_parts)
+    
+    def get_context_prompt_structured(self, include_news: int = 3) -> str:
+        """Get structured contextual prompt in JSON-like format.
+        
+        Args:
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
+        """
+        simple_data = self.get_simple_context(include_news=include_news)
+        
+        # Create structured format with all information
+        import json
+        
+        context_data = {
+            "user": f"{simple_data['username']} ({simple_data['full_name']})",
+            "language": simple_data['language'],
+            "location": f"{simple_data['location']['city']}, {simple_data['location']['country']}",
+            "coordinates": f"{simple_data['location']['latitude']:.2f},{simple_data['location']['longitude']:.2f}",
+            "time": simple_data['time'][:16],
+            "temperature": f"{simple_data['weather']['temp_c']}°C",
+            "humidity": f"{simple_data['weather']['humidity']}%",
+            "wind": f"{simple_data['weather']['wind_kph']}km/h {simple_data['weather']['wind_dir'][:3]}",
+            "sky": simple_data['weather']['sky'],
+            "aqi": simple_data['air_quality']['aqi']['value'],
+            "air_quality": simple_data['air_quality']['aqi']['description'],
+            "air_recommendation": simple_data['air_quality']['recommendations']['general'],
+            "sunrise": simple_data['astronomy']['sunrise'],
+            "sunset": simple_data['astronomy']['sunset'],
+            "moon": simple_data['astronomy']['phase_description'],
+            "system": simple_data['machine']['platform'],
+            "cpu": simple_data['machine']['model'],
+            "freemem": f"{simple_data['machine']['memory_free']:.1f}GB",
+            "freespace": f"{simple_data['machine']['disk_free']:.1f}GB"
+        }
+        
+        # Add news if requested
+        if simple_data['news']:
+            context_data["news"] = [{"title": article['title'], "url": article['url']} for article in simple_data['news']]
+        
+        # Create minified JSON for the prompt
+        context_json = json.dumps(context_data, separators=(',', ':'))
+        
         structured_parts = []
-        structured_parts.append("CONTEXT_DATA: {")
-        structured_parts.append(f'  "user": "{simple_data["username"]} ({simple_data["full_name"]})",')
-        structured_parts.append(f'  "location": "{simple_data["location"]["city"]}, {simple_data["location"]["country"]}",')
-        structured_parts.append(f'  "time": "{simple_data["time"][:16]}",')
-        structured_parts.append(f'  "weather": "{simple_data["weather"]["temp_c"]}°C, {simple_data["weather"]["sky"]}",')
-        structured_parts.append(f'  "air_quality": "AQI {simple_data["air_quality"]["aqi"]["value"]} ({simple_data["air_quality"]["aqi"]["description"]})",')
-        structured_parts.append(f'  "system": "{simple_data["machine"]["platform"]}"')
-        structured_parts.append("}")
+        structured_parts.append(f"CONTEXT_DATA: {context_json}")
         structured_parts.append("")
-        structured_parts.append("INSTRUCTIONS: Use this context to provide location-aware, time-sensitive, weather-appropriate responses. Consider user's environment and local conditions in all assistance.")
+        # Instructions for STRUCTURED
+        instructions = ["Use this context to provide location-aware, time-sensitive, weather-appropriate responses. Consider user's environment and local conditions in all assistance."]
+        instructions.append("Factor in system resources and platform capabilities for technical recommendations.")
+        if simple_data['news']:
+            instructions.append("Reflect on current news relevance to user's context and needs; use URLs for follow-up if needed.")
+        
+        structured_parts.append(f"INSTRUCTIONS: {' '.join(instructions)}")
         
         return "\n".join(structured_parts)
     
@@ -805,17 +954,18 @@ class Contextuals:
         else:
             return json.dumps(data, indent=2)
     
-    def get_simple_context_json(self, minified: bool = False) -> str:
+    def get_simple_context_json(self, minified: bool = False, include_news: int = 0) -> str:
         """Get simple contextual information as JSON string.
         
         Args:
             minified: If True, return minified JSON without indentation.
+            include_news: Number of news articles to include (0 = no news, 3 = default, 5, 10, etc.).
             
         Returns:
             JSON string with simple contextual information.
         """
         import json
-        data = self.get_simple_context()
+        data = self.get_simple_context(include_news=include_news)
         if minified:
             return json.dumps(data, separators=(',', ':'))
         else:

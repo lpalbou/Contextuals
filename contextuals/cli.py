@@ -511,26 +511,31 @@ def simple_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, 
     Returns:
         Simple context data
     """
+    # Get number of news articles to include
+    include_news = getattr(args, 'news', 0)
+    
     if args.format == "markdown":
         # Return markdown as a special data structure
-        markdown_content = context.get_simple_context_markdown()
+        markdown_content = context.get_simple_context_markdown(include_news=include_news)
         return {
             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "type": "simple_context_markdown",
             "format": "markdown",
             "minified": getattr(args, 'minified', False),
+            "include_news": include_news,
             "data": {
                 "content": markdown_content
             }
         }
     else:
         # Return JSON format
-        simple_data = context.get_simple_context()
+        simple_data = context.get_simple_context(include_news=include_news)
         return {
             "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "type": "simple_context",
             "format": "json",
             "minified": getattr(args, 'minified', False),
+            "include_news": include_news,
             "data": simple_data
         }
 
@@ -545,22 +550,26 @@ def prompt_command(args: argparse.Namespace, context: Contextuals) -> Dict[str, 
     Returns:
         Prompt data
     """
+    # Get number of news articles to include
+    include_news = getattr(args, 'news', 3)
+    
     # Get the appropriate prompt variant
     if args.variant == "compact":
-        prompt_content = context.get_context_prompt_compact()
+        prompt_content = context.get_context_prompt_compact(include_news=include_news)
     elif args.variant == "detailed":
-        prompt_content = context.get_context_prompt_detailed()
+        prompt_content = context.get_context_prompt_detailed(include_news=include_news)
     elif args.variant == "minimal":
-        prompt_content = context.get_context_prompt_minimal()
+        prompt_content = context.get_context_prompt_minimal(include_news=include_news)
     elif args.variant == "structured":
-        prompt_content = context.get_context_prompt_structured()
+        prompt_content = context.get_context_prompt_structured(include_news=include_news)
     else:  # default
-        prompt_content = context.get_context_prompt()
+        prompt_content = context.get_context_prompt(include_news=include_news)
     
     return {
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "type": "context_prompt",
         "variant": args.variant,
+        "include_news": include_news,
         "data": {
             "content": prompt_content
         }
@@ -789,11 +798,15 @@ def main() -> None:
                              help="Output format (default: json)")
     simple_parser.add_argument("--minified", action="store_true", 
                              help="Minify JSON output (only applies to JSON format)")
+    simple_parser.add_argument("--news", type=int, default=0, 
+                             help="Number of news articles to include (default: 0, use 3 for default news)")
     
     # Prompt command
     prompt_parser = subparsers.add_parser("prompt", help="Get optimized context prompt for LLM system messages")
     prompt_parser.add_argument("--variant", choices=["default", "compact", "detailed", "minimal", "structured"], 
                              default="default", help="Prompt variant (default: default)")
+    prompt_parser.add_argument("--news", type=int, default=3, 
+                             help="Number of news articles to include (default: 3, use 0 for no news)")
     
     # System command
     system_parser = subparsers.add_parser("system", help="Get system information")
