@@ -709,7 +709,7 @@ class Contextuals:
         
         # Machine context - detailed memory and disk info
         machine = simple_data['machine']
-        prompt_parts.append(f"SYSTEM: {machine['platform']}, {machine['model']}, {machine['memory_free']:.1f}GB free/{machine['maxmem']:.1f}GB total memory, {machine['disk_free']:.1f}GB free disk")
+        prompt_parts.append(f"SYSTEM: {machine['platform']}, {machine['model']}, memory: {machine['memory_free']:.0f}GB/{machine['maxmem']:.0f}GB, disk: {machine['disk_free']:.0f}GB/{machine['disk_total']:.0f}GB")
         
         # News if available and requested
         if simple_data['news']:
@@ -759,9 +759,8 @@ class Contextuals:
             f"MOON: {simple_data['astronomy']['phase_description'][:8]}",
             f"SYS: {machine['platform']}",
             f"CPU: {machine['model'][:15]}",
-            f"FREEMEM {machine['memory_free']:.1f}GB",
-            f"MAXMEM {machine['maxmem']:.1f}GB", 
-            f"FREESPACE {machine['disk_free']:.1f}GB"
+            f"MEM {machine['memory_free']:.0f}GB/{machine['maxmem']:.0f}GB",
+            f"DISK {machine['disk_free']:.0f}GB/{machine['disk_total']:.0f}GB"
         ]
         
         # Add news if requested (only compress titles, keep URLs full for COMPACT)
@@ -832,8 +831,8 @@ class Contextuals:
         prompt_parts.append(f"SYSTEM INFORMATION:")
         prompt_parts.append(f"• Platform: {machine['platform']}")
         prompt_parts.append(f"• Model: {machine['model']}")
-        prompt_parts.append(f"• Memory: {machine['memory_free']:.1f}GB free / {machine['memory_total']:.1f}GB total")
-        prompt_parts.append(f"• Disk: {machine['disk_free']:.1f}GB free / {machine['disk_total']:.1f}GB total")
+        prompt_parts.append(f"• Memory: {machine['memory_free']:.0f}GB / {machine['memory_total']:.0f}GB")
+        prompt_parts.append(f"• Disk: {machine['disk_free']:.0f}GB / {machine['disk_total']:.0f}GB")
         prompt_parts.append("")
         
         if simple_data['news']:
@@ -868,7 +867,7 @@ class Contextuals:
             f"User: {simple_data['username']} in {loc['city']}, {loc['country']}",
             f"{weather['temp_c']}°C {weather['sky']}",
             f"{simple_data['time'][:16]}",
-            f"Mem: {simple_data['machine']['maxmem']:.0f}GB"
+            f"Mem: {simple_data['machine']['memory_free']:.0f}GB/{simple_data['machine']['maxmem']:.0f}GB"
         ]
         
         # Add news if requested (very minimal for MINIMAL variant)
@@ -915,9 +914,10 @@ class Contextuals:
             "moon": simple_data['astronomy']['phase_description'],
             "system": simple_data['machine']['platform'],
             "cpu": simple_data['machine']['model'],
-            "freemem": f"{simple_data['machine']['memory_free']:.1f}GB",
-            "maxmem": f"{simple_data['machine']['maxmem']:.1f}GB",
-            "freespace": f"{simple_data['machine']['disk_free']:.1f}GB"
+            "freemem": f"{simple_data['machine']['memory_free']:.0f}GB",
+            "maxmem": f"{simple_data['machine']['maxmem']:.0f}GB",
+            "freespace": f"{simple_data['machine']['disk_free']:.0f}GB",
+            "maxspace": f"{simple_data['machine']['disk_total']:.0f}GB"
         }
         
         # Add news if requested
