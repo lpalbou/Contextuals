@@ -828,7 +828,7 @@ class Contextuals:
             f"CTX: {simple_data['time'][:16]} {simple_data['timezone']}",
             f"SR {astro['sunrise'][:5]}",
             f"SS {astro['sunset'][:5]}",
-            f"USR: {simple_data['username']} ({simple_data['full_name'][:10]}...)",
+            f"USR: {simple_data['username']} ({simple_data['full_name']})",
             f"LANG: {simple_data['language'][:5]}",
             f"LOC: {loc['city']},{loc['country']} ({loc['latitude']:.2f},{loc['longitude']:.2f})",
             f"ENV: {weather['temp_c']}°C {weather['sky']} {weather['humidity']}% {weather['wind_kph']}km/h {weather['wind_dir']}",

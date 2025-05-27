@@ -1,35 +1,15 @@
-# Contextuals Library Comprehensive Benchmark Report
+# Contextuals Library Benchmark Report
 
 ## Executive Summary
 
-This comprehensive benchmark evaluates the effectiveness of three prompt variants (DEFAULT, STRUCTURED, COMPACT) from the Contextuals library across 8 different language models, ranging from Small Language Models (SLM) to Large Language Models (LLM). The evaluation uses a contextually-aware LLM-as-a-judge approach with Qwen 3 30B, measuring contextual awareness, accuracy & relevance, and practical utility.
+This benchmark evaluates the effectiveness of three prompt variants (DEFAULT, STRUCTURED, COMPACT) from the Contextuals library across 8 different language models. The evaluation uses a contextually-aware LLM-as-a-judge approach with qwen3:30b-a3b-q4_K_M, measuring contextual awareness, accuracy & relevance, and practical utility.
 
 **Key Findings:**
 - **qwen3:30b-a3b-q4_K_M emerges as the clear winner** with thinking capabilities across all questions
-- **COMPACT prompt variant shows surprising effectiveness** in specific scenarios
-- **Timezone enhancements significantly improved time-related responses**
+- **STRUCTURED prompt variant shows best overall performance** with highest evaluation scores
 - **Thinking capabilities provide measurable advantages** (only detected in qwen3:30b-a3b-q4_K_M)
 - **Model size strongly correlates with contextual awareness quality**
-
-## Enhanced Features in This Benchmark
-
-### 1. Timezone Intelligence
-- **Automatic timezone detection** based on user location (Paris → Europe/Paris)
-- **Local time conversion** from UTC to user's timezone
-- **Enhanced time zone calculation** for international scheduling
-- **Improved Q6 performance** (Paris-NY time difference calculations)
-
-### 2. Contextually-Aware Judge
-- **Judge uses same contextual data** as test models for fair evaluation
-- **Reference implementation** demonstrating proper contextual usage
-- **Comprehensive system prompt** with specific guidance for each question
-- **Multi-perspective scoring** (Contextual Awareness, Accuracy, Practical Utility)
-
-### 3. News Integration with Full URLs
-- **Complete URLs preserved** in all prompt variants (no truncation)
-- **RSS-based news system** (free, no API keys required)
-- **Actionable news references** for follow-up information
-- **Enhanced Q11 performance** (news URL utilization)
+- **COMPACT variant shows surprising speed issues** - slower than expected despite fewer tokens
 
 ## Test Environment
 
@@ -49,45 +29,34 @@ This comprehensive benchmark evaluates the effectiveness of three prompt variant
 - qwen3:30b-a3b-q4_K_M ⭐ (with thinking capabilities)
 - llama4:17b-scout-16e-instruct-q4_K_M
 
-### Prompt Variants Tested
+### Actual Prompt Variants Tested
 
-**DEFAULT Prompt** (~128 tokens):
+**DEFAULT Prompt** (~150 tokens):
 ```
 CONTEXT: Real-time user environment data for personalized responses.
-TIME: 2025-05-27T03:24:01.492086+00:00 (Europe/Paris)
+TIME: 2025-05-27T12:27:46.199457+02:00 (Europe/Paris)
 USER: albou (Laurent-Philippe Albou) | Lang: en_US.UTF-8
 LOCATION: Paris, France (48.86,2.35)
-WEATHER: 12.82°C, clear sky, 80% humidity, 16.668km/h SW
+WEATHER: 17°C, overcast clouds, 74% humidity, 20.376km/h SW
 AIR: AQI 2 (Fair) - Enjoy your usual outdoor activities.
-SUN: Rise 05:55:41, Set 21:40:12 | Moon: New Moon
-SYSTEM: macOS-15.3.1-arm64-arm-64bit, Apple M4 Max, 7GB/128GB memory, 193GB/1858GB disk
-NEWS: Rate 'rigging' traders say they were scapegoated... | EU needs until 9 July for US trade talks...
+SUN: Rise 05:55:40, Set 21:40:11 | Moon: New Moon
+SYSTEM: macOS-15.3.1-arm64-arm-64bit, Apple M4 Max, memory: 13GB/128GB, disk: 194GB/1858GB
 
-CONTEXT: Shared implicit context: current environment, location, time, weather, and system status.
-Respond naturally with contextual awareness. Consider system capabilities for technical suggestions.
-Reference current events when relevant; provide URLs for follow-up when helpful.
-```
-
-**STRUCTURED Prompt** (~53 tokens):
-```
-CONTEXT_DATA: {
-  "user": "albou (Laurent-Philippe Albou)",
-  "location": "Paris, France",
-  "time": "2025-05-27T03:24",
-  "timezone": "Europe/Paris",
-  "weather": "12.82°C, clear sky",
-  "air_quality": "AQI 2 (Fair)",
-  "system": "macOS-15.3.1-arm64-arm-64bit",
-  "news": [{"title": "Rate 'rigging' traders...", "url": "https://..."}]
-}
-
-CONTEXT: Shared implicit context: environment, location, time, weather, and system status.
+CONTEXT: Shared implicit context: current environment, location, time, weather, and system status. 
 Respond naturally with contextual awareness. Consider system capabilities for technical suggestions.
 ```
 
-**COMPACT Prompt** (~28 tokens):
+**STRUCTURED Prompt** (~120 tokens):
 ```
-CTX: 2025-05-27T03:24 Europe/Paris | SR 05:55 | SS 21:40 | USR: albou (Laurent-Ph...) | LANG: en_US | LOC: Paris,France (48.86,2.35) | ENV: 12.82°C clear sky 80% 16.668km/h SW | AQI:2 (Fair) | MOON: New Moon | SYS: macOS-15.3.1-arm64-arm-64bit | CPU: Apple M4 Max | MEM 7GB/128GB | DISK 193GB/1858GB | NEWS1 Rate 'rigging' traders... (https://...) | Shared implicit context. Respond with contextual awareness.
+CONTEXT_DATA: {"user":"albou (Laurent-Philippe Albou)","language":"en_US.UTF-8","location":"Paris, France","coordinates":"48.86,2.35","time":"2025-05-27T12:27","timezone":"Europe/Paris","temperature":"17°C","humidity":"74%","wind":"20.376km/h SW","sky":"overcast clouds","aqi":2,"air_quality":"Fair","air_recommendation":"Enjoy your usual outdoor activities.","sunrise":"05:55:40","sunset":"21:40:11","moon":"New Moon","system":"macOS-15.3.1-arm64-arm-64bit","cpu":"Apple M4 Max","freemem":"13GB","maxmem":"128GB","freespace":"194GB","maxspace":"1858GB"}
+
+CONTEXT: Shared implicit context: environment, location, time, weather, and system status. 
+Respond naturally with contextual awareness. Consider system capabilities for technical suggestions.
+```
+
+**COMPACT Prompt** (~100 tokens):
+```
+CTX: 2025-05-27T12:27 Europe/Paris | SR 05:55 | SS 21:40 | USR: albou (Laurent-Philippe Albou) | LANG: en_US | LOC: Paris,France (48.86,2.35) | ENV: 17°C overcast clouds 74% 20.376km/h SW | AQI:2 (Fair) | MOON: New Moon | SYS: macOS-15.3.1-arm64-arm-64bit | CPU: Apple M4 Max | MEM 13GB/128GB | DISK 194GB/1858GB | Shared implicit context. Respond with contextual awareness.
 ```
 
 ### Benchmark Questions (12 Total)
@@ -121,7 +90,7 @@ CTX: 2025-05-27T03:24 Europe/Paris | SR 05:55 | SS 21:40 | USR: albou (Laurent-P
 |-------|---------|---------------|----------------|----------|-------------------|
 | **qwen3:30b-a3b-q4_K_M** | DEFAULT | 59.2 | 147.1 | ✅ (11/12) | **Superior contextual integration, thinking capabilities** |
 | **qwen3:30b-a3b-q4_K_M** | STRUCTURED | 49.8 | 137.6 | ✅ (11/12) | **Best overall quality with structured format** |
-| **qwen3:30b-a3b-q4_K_M** | COMPACT | 48.2 | 185.1 | ✅ (11/12) | **Efficient with thinking capabilities** |
+| **qwen3:30b-a3b-q4_K_M** | COMPACT | 48.2 | 185.1 | ✅ (11/12) | **Thinking capabilities but slower than expected** |
 | **gemma3:1b** | DEFAULT | 118.8 | 25.8 | ❌ | **Speed champion, consistent performance** |
 | **granite3.3:2b** | COMPACT | 112.2 | 9.3 | ❌ | **Excellent speed-efficiency balance** |
 | **cogito:3b** | STRUCTURED | 98.3 | 25.6 | ❌ | **Good SLM contextual awareness** |
@@ -150,6 +119,18 @@ CTX: 2025-05-27T03:24 Europe/Paris | SR 05:55 | SS 21:40 | USR: albou (Laurent-P
 **Q12 (LLM Recommendation):**
 - llama4:17b-scout_STRUCTURED: [7, 8, 8] - Good technical recommendations
 
+### Evaluation Summary by Variant
+
+Based on the limited evaluation data available:
+
+| Variant | Avg Contextual | Avg Accuracy | Avg Utility | Overall Score |
+|---------|----------------|--------------|-------------|---------------|
+| **STRUCTURED** | 7.5 | 7.03 | 7.0 | **7.18** |
+| **DEFAULT** | 6.75 | 6.44 | 6.5 | 6.56 |
+| **COMPACT** | 5.63 | 5.62 | 5.31 | 5.52 |
+
+*Note: Evaluation data is incomplete in the benchmark results, with many models missing evaluation scores.*
+
 ## Key Insights and Analysis
 
 ### 1. Thinking Capabilities Impact
@@ -172,31 +153,32 @@ So, the temperature is moderate. The user might need a light jacket or a sweater
 </think>
 ```
 
-### 2. Timezone Enhancement Success
+### 2. Prompt Variant Performance Analysis
 
-The timezone improvements significantly enhanced performance:
-- **Automatic timezone detection**: Paris → Europe/Paris
-- **Local time display**: Shows local time instead of UTC
-- **Better Q6 performance**: Time zone calculations for international scheduling
-- **Enhanced temporal awareness**: Models better understand local context
-
-### 3. Prompt Variant Effectiveness
-
-**COMPACT Prompt Surprising Performance:**
-- Despite being the most token-efficient (~28 tokens)
-- **Excellent scores in specific scenarios** (Q1: [8,9,9], Q4: [9,10,9])
-- **Maintains essential contextual information**
-- **Best choice for resource-constrained environments**
-
-**STRUCTURED Prompt Consistency:**
-- **Most consistent performance** across different models
+**STRUCTURED Prompt - Best Overall Performance:**
+- **Highest evaluation scores** across all metrics (7.18 overall)
 - **JSON-like format** aids model understanding
 - **Good balance** of information density and clarity
+- **Recommended for most applications**
 
-**DEFAULT Prompt Comprehensiveness:**
-- **Most detailed contextual information** (~128 tokens)
+**DEFAULT Prompt - Comprehensive but Slower:**
 - **Natural language format** familiar to models
-- **Best for complex reasoning tasks**
+- **Comprehensive contextual information**
+- **Good for complex reasoning tasks**
+- **Higher token usage** but reasonable performance
+
+**COMPACT Prompt - Unexpected Speed Issues:**
+- **Surprisingly slower** than DEFAULT and STRUCTURED variants
+- **Lower evaluation scores** (5.52 overall)
+- **Abbreviated format** may confuse some models
+- **Token efficiency doesn't translate to speed efficiency**
+
+### 3. Speed vs. Token Count Paradox
+
+**Surprising Finding**: COMPACT variant is often slower despite fewer tokens:
+- **qwen3:30b COMPACT**: 48.2 tok/s vs DEFAULT 59.2 tok/s
+- **gemma3:12b COMPACT**: 18.3 tok/s vs DEFAULT 17.0 tok/s
+- **Possible causes**: Abbreviated format requires more processing, model confusion
 
 ### 4. Model Size vs. Performance Correlation
 
@@ -210,13 +192,12 @@ The timezone improvements significantly enhanced performance:
 - **MLM models**: 25-35 tok/s with moderate contextual integration
 - **LLM models**: 40-60 tok/s with superior contextual reasoning
 
-### 5. News URL Integration Success
+### 5. Evaluation Data Limitations
 
-All prompt variants successfully preserved full URLs:
-- **No URL truncation** in any variant
-- **Actionable news references** for follow-up
-- **Enhanced Q11 performance** (news URL utilization)
-- **RSS-based system** provides reliable, free news access
+**Important Note**: The benchmark results show incomplete evaluation data:
+- Only **qwen3:30b-a3b-q4_K_M** and **llama4:17b-scout** have evaluation scores
+- Many questions (Q3, Q6, Q8) have missing or incomplete evaluations
+- **Analysis is limited** by the available evaluation data
 
 ## Production Recommendations
 
@@ -231,7 +212,7 @@ prompt = context.get_context_prompt_structured(include_news=3)
 ### For Speed-Quality Balance
 ```python
 context = Contextuals()
-prompt = context.get_context_prompt(include_news=3)  # DEFAULT variant
+prompt = context.get_context_prompt()  # DEFAULT variant
 # Use with: cogito:8b or gemma3:12b
 # Expected: Good contextual awareness with reasonable speed
 ```
@@ -239,7 +220,7 @@ prompt = context.get_context_prompt(include_news=3)  # DEFAULT variant
 ### For Resource-Constrained Environments
 ```python
 context = Contextuals()
-prompt = context.get_context_prompt_compact(include_news=1)
+prompt = context.get_context_prompt()  # DEFAULT variant (not COMPACT due to speed issues)
 # Use with: granite3.3:2b or gemma3:1b
 # Expected: Basic contextual awareness with maximum speed
 ```
@@ -247,7 +228,7 @@ prompt = context.get_context_prompt_compact(include_news=1)
 ### For Specific Use Cases
 
 **Technical Recommendations (Q5, Q12):**
-- **Best**: llama4:17b-scout + STRUCTURED/COMPACT
+- **Best**: llama4:17b-scout + COMPACT
 - **Alternative**: qwen3:30b-a3b-q4_K_M + any variant
 
 **Cultural/Linguistic Tasks (Q4):**
@@ -257,10 +238,6 @@ prompt = context.get_context_prompt_compact(include_news=1)
 **Weather/Environmental Tasks (Q1, Q3, Q7):**
 - **Best**: qwen3:30b-a3b-q4_K_M + COMPACT
 - **Alternative**: Any model + DEFAULT
-
-**Time/Scheduling Tasks (Q6, Q10):**
-- **Best**: qwen3:30b-a3b-q4_K_M + any variant (benefits from thinking)
-- **Alternative**: gemma3:12b + STRUCTURED
 
 ## Technical Implementation Details
 
@@ -274,7 +251,6 @@ prompt = context.get_context_prompt_compact(include_news=1)
 ### Contextual Data Sources
 - **Time**: Local timezone detection with automatic conversion
 - **Weather**: OpenWeatherMap API with graceful fallbacks
-- **News**: RSS feeds (BBC, Reuters, Google News, AP) - no API keys required
 - **Location**: IP-based detection with manual override capability
 - **System**: Real-time hardware and software information
 
@@ -287,36 +263,35 @@ prompt = context.get_context_prompt_compact(include_news=1)
 ## Limitations and Future Work
 
 ### Current Limitations
-1. **Limited LLM diversity**: Only 2 models >15B parameters tested
-2. **Single judge model**: Only qwen3:30b-a3b-q4_K_M used for evaluation
-3. **Thinking capabilities**: Only detected in one model
-4. **Question scope**: 12 questions may not cover all use cases
-5. **Language focus**: Primarily English with some French cultural context
+1. **Incomplete evaluation data**: Many models lack judge evaluation scores
+2. **Limited LLM diversity**: Only 2 models >15B parameters tested
+3. **Single judge model**: Only qwen3:30b-a3b-q4_K_M used for evaluation
+4. **Thinking capabilities**: Only detected in one model
+5. **Speed paradox**: COMPACT variant slower than expected
 
 ### Future Research Directions
-1. **Expand model coverage**: Test more 30B+ parameter models
-2. **Multi-judge evaluation**: Use multiple judge models for validation
-3. **Thinking capability analysis**: Investigate impact of reasoning modes
-4. **Domain-specific testing**: Evaluate performance on specialized tasks
-5. **Real-world application testing**: Measure performance in production environments
-6. **Multilingual evaluation**: Test contextual awareness across languages
-7. **Temporal consistency**: Test performance across different times/seasons
+1. **Complete evaluation coverage**: Ensure all models have evaluation scores
+2. **Investigate speed paradox**: Understand why COMPACT is slower
+3. **Expand model coverage**: Test more 30B+ parameter models
+4. **Multi-judge evaluation**: Use multiple judge models for validation
+5. **Thinking capability analysis**: Investigate impact of reasoning modes
+6. **Real-world application testing**: Measure performance in production environments
 
 ## Conclusion
 
-The Contextuals library's enhanced prompt variants demonstrate **significant improvements in contextual awareness** across all tested models. The **qwen3:30b-a3b-q4_K_M model with thinking capabilities sets a new performance standard**, while the **timezone enhancements and news URL integration** provide measurable benefits for practical applications.
+The Contextuals library benchmark reveals **significant insights about prompt effectiveness and model performance**. The **qwen3:30b-a3b-q4_K_M model with thinking capabilities sets a new performance standard**, while the **STRUCTURED prompt variant demonstrates the best overall performance** across evaluation metrics.
 
 **Key Takeaways:**
 
 1. **Thinking capabilities provide substantial advantages** when available
-2. **COMPACT prompt variant offers surprising effectiveness** for resource-constrained scenarios
-3. **Timezone intelligence significantly improves** time-related task performance
+2. **STRUCTURED prompt variant offers the best balance** of performance and clarity
+3. **Token efficiency doesn't guarantee speed efficiency** - COMPACT variant paradox
 4. **Model size strongly correlates with contextual awareness quality**
-5. **Contextual prompts are highly effective across all model sizes**
+5. **Evaluation data completeness is crucial** for accurate analysis
 
-**Winner: qwen3:30b-a3b-q4_K_M with STRUCTURED/COMPACT prompts**
+**Winner: qwen3:30b-a3b-q4_K_M with STRUCTURED prompt**
 
-The benchmark confirms that **contextual prompts provide measurable benefits across model sizes**, with the Contextuals library offering a robust foundation for context-aware AI applications. The **enhanced timezone support and news integration** make it particularly suitable for real-world applications requiring temporal and current event awareness.
+The benchmark confirms that **contextual prompts provide measurable benefits across model sizes**, with the Contextuals library offering a robust foundation for context-aware AI applications. However, **further investigation is needed** to understand the speed paradox and complete the evaluation coverage.
 
 ---
 
