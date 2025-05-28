@@ -29,6 +29,81 @@ def _round_number(value: Union[int, float, None], precision: int = 3) -> Union[i
     return round(float(value), precision)
 
 
+def _get_utc_offset(timezone_name: str, local_time: str) -> str:
+    """Convert timezone name to UTC offset format (+/-X).
+    
+    Args:
+        timezone_name: Timezone name like "Europe/Paris"
+        local_time: Local time in ISO format
+        
+    Returns:
+        UTC offset string like "+2" or "-5"
+    """
+    try:
+        import zoneinfo
+        import datetime
+        
+        # Parse the local time - handle timezone info properly
+        if '+' in local_time:
+            dt_str = local_time.split('+')[0]
+        elif local_time.endswith('Z'):
+            dt_str = local_time[:-1]
+        else:
+            # If it contains timezone offset like -05:00, remove it for parsing
+            if local_time.count('-') >= 3:  # YYYY-MM-DD and potential timezone offset
+                dt_str = local_time.rsplit('-', 1)[0] if ':' in local_time.split('-')[-1] else local_time
+            else:
+                dt_str = local_time
+        
+        # Parse as naive datetime
+        dt_naive = datetime.datetime.fromisoformat(dt_str)
+        
+        # Get the timezone
+        tz = zoneinfo.ZoneInfo(timezone_name)
+        
+        # Create a localized datetime
+        localized_dt = dt_naive.replace(tzinfo=tz)
+        
+        # Get the UTC offset
+        offset = localized_dt.utcoffset()
+        if offset:
+            total_seconds = int(offset.total_seconds())
+            hours = total_seconds // 3600
+            return f"{hours:+d}"
+        else:
+            return "+0"
+    except (ImportError, Exception):
+        # Enhanced fallback for common timezones if zoneinfo is not available
+        try:
+            dt = datetime.datetime.fromisoformat(local_time.split('+')[0].split('Z')[0])
+            month = dt.month
+            
+            # DST detection for common timezones (approximate, between March and October/November)
+            if timezone_name in ["Europe/Paris", "Europe/Berlin", "Europe/Madrid"]:
+                return "+2" if 3 <= month <= 10 else "+1"
+            elif timezone_name in ["Europe/London", "Europe/Dublin"]:
+                return "+1" if 3 <= month <= 10 else "+0"
+            elif timezone_name in ["America/New_York", "America/Toronto"]:
+                return "-4" if 3 <= month <= 11 else "-5"
+            elif timezone_name in ["America/Los_Angeles", "America/Vancouver"]:
+                return "-7" if 3 <= month <= 11 else "-8"
+            elif timezone_name in ["America/Chicago", "America/Mexico_City"]:
+                return "-5" if 3 <= month <= 11 else "-6"
+            elif timezone_name == "Asia/Tokyo":
+                return "+9"
+            elif timezone_name in ["Australia/Sydney", "Australia/Melbourne"]:
+                return "+11" if (month >= 10 or month <= 4) else "+10"
+            elif timezone_name == "UTC":
+                return "+0"
+            else:
+                # Try to extract from timezone name
+                if "UTC" in timezone_name:
+                    return "+0"
+                return "+0"  # Default fallback
+        except Exception:
+            return "+0"
+
+
 class Contextuals:
     """Main class for accessing contextual information.
     
@@ -428,7 +503,8 @@ class Contextuals:
         if "location" in all_context and "data" in all_context["location"]:
             loc_data = all_context["location"]["data"]
             country = loc_data.get("country", "").upper()
-            city = loc_data.get("name", "").split(",")[0].strip() if "name" in loc_data else ""
+            location_name = loc_data.get("name", "") if "name" in loc_data else ""
+            city = location_name.split(",")[0].strip() if location_name else ""
             
             # Map common locations to timezones
             timezone_map = {
@@ -448,15 +524,34 @@ class Contextuals:
                 "CANADA": "America/Toronto",
                 "TORONTO": "America/Toronto",
                 "AUSTRALIA": "Australia/Sydney",
-                "SYDNEY": "Australia/Sydney"
+                "SYDNEY": "Australia/Sydney",
+                # US Cities
+                "NEW YORK": "America/New_York",
+                "CITY OF NEW YORK": "America/New_York",
+                "LOS ANGELES": "America/Los_Angeles",
+                "CHICAGO": "America/Chicago",
+                "DENVER": "America/Denver",
+                "PHOENIX": "America/Phoenix"
             }
             
-            # Try to find timezone by country or city
+            # Try to find timezone by parsing location components
             detected_tz = None
+            
+            # Check if city matches directly
             if city.upper() in timezone_map:
                 detected_tz = timezone_map[city.upper()]
+            
+            # Check if country matches
             elif country in timezone_map:
                 detected_tz = timezone_map[country]
+            
+            # Check if any part of the full location name contains a known location
+            elif location_name:
+                location_upper = location_name.upper()
+                for key, tz in timezone_map.items():
+                    if key in location_upper:
+                        detected_tz = tz
+                        break
             
             if detected_tz:
                 simple["timezone"] = detected_tz
@@ -758,13 +853,13 @@ class Contextuals:
         """
         simple_data = self.get_simple_context(include_news=include_news)
         
-        # Create token-efficient prompt
+        # Create structured sections
         prompt_parts = []
         
-        # Header - concise explanation
-        prompt_parts.append("CONTEXT: Real-time user environment data for personalized responses.")
+        # Header
+        prompt_parts.append("<IMPLICIT_CONTEXT>Shared real-time implicit context: user, location, time, weather, environment and system status.")
         
-        # Core data in compact format
+        # Core data sections
         prompt_parts.append(f"TIME: {simple_data['time']} ({simple_data['timezone']})")
         prompt_parts.append(f"USER: {simple_data['username']} ({simple_data['full_name']}) | Lang: {simple_data['language']}")
         
@@ -797,16 +892,16 @@ class Contextuals:
                 news_items.append(f"{title} ({url})")
             prompt_parts.append(f"NEWS: {' | '.join(news_items)}")
         
-        # Context instructions - concise and natural
-        usage_parts = ["Shared implicit context: current environment, location, time, weather, and system status."]
-        usage_parts.append("Respond naturally with contextual awareness.")
-        usage_parts.append("Consider system capabilities for technical suggestions.")
+        # Instructions section
+        prompt_parts.append("")
+        instructions = ["respond naturally with this contextual awareness."]
+        instructions.append("Consider system capabilities for technical suggestions.")
         
         # Add news guidance if news is present
         if simple_data['news']:
-            usage_parts.append("Reference current events when relevant; provide URLs for follow-up when helpful.")
+            instructions.append("Reference current events when relevant; provide URLs for follow-up when helpful.")
         
-        prompt_parts.append(f"\nCONTEXT: {' '.join(usage_parts)}")
+        prompt_parts.append(f"INSTRUCTION : {' '.join(instructions).capitalize()}</IMPLICIT_CONTEXT>")
         
         return "\n".join(prompt_parts)
     
@@ -824,8 +919,11 @@ class Contextuals:
         astro = simple_data['astronomy']
         machine = simple_data['machine']
         
+        # Get UTC offset for timezone
+        utc_offset = _get_utc_offset(simple_data['timezone'], simple_data['time'])
+        
         compact_parts = [
-            f"CTX: {simple_data['time'][:16]} {simple_data['timezone']}",
+            f"{simple_data['time'][:16]}{utc_offset}",
             f"SR {astro['sunrise'][:5]}",
             f"SS {astro['sunset'][:5]}",
             f"USR: {simple_data['username']} ({simple_data['full_name']})",
@@ -849,15 +947,15 @@ class Contextuals:
                 news_items.append(f"NEWS{i} {title} ({url})")
             compact_parts.extend(news_items)
         
+        # Create structured format with XML-like tags
+        data_section = " | ".join(compact_parts)
+        
         # Context instructions for COMPACT
-        usage_parts = ["Shared implicit context."]
-        usage_parts.append("Respond with contextual awareness.")
+        instructions = ["Respond with contextual awareness."]
         if simple_data['news']:
-            usage_parts.append("Reference current events when relevant.")
+            instructions.append("Reference current events when relevant.")
         
-        compact_parts.append(" ".join(usage_parts))
-        
-        return " | ".join(compact_parts)
+        return f"<CTX>Shared implicit context : {data_section} | {' '.join(instructions)}</CTX>"
     
     def get_context_prompt_detailed(self, include_news: int = 3) -> str:
         """Get detailed contextual prompt with comprehensive information.
@@ -940,10 +1038,13 @@ class Contextuals:
         loc = simple_data['location']
         weather = simple_data['weather']
         
+        # Get UTC offset for timezone
+        utc_offset = _get_utc_offset(simple_data['timezone'], simple_data['time'])
+        
         minimal_parts = [
             f"User: {simple_data['username']} in {loc['city']}, {loc['country']}",
             f"{weather['temp_c']}°C {weather['sky']}",
-            f"{simple_data['time'][:16]} {simple_data['timezone']}",
+            f"{simple_data['time'][:16]}{utc_offset}",
             f"Mem: {simple_data['machine']['memory_free']:.0f}GB/{simple_data['machine']['maxmem']:.0f}GB"
         ]
         
@@ -953,14 +1054,15 @@ class Contextuals:
             news_url = simple_data['news'][0]['url']  # Keep full URL - must remain usable
             minimal_parts.append(f"News: {news_title} ({news_url})")
         
+        # Create structured format with XML-like tags
+        data_section = " | ".join(minimal_parts)
+        
         # Context instructions for MINIMAL
-        usage_parts = ["Shared context."]
+        instructions = ["Shared context."]
         if simple_data['news']:
-            usage_parts.append("Reference current events.")
+            instructions.append("Reference current events.")
         
-        minimal_parts.append(" ".join(usage_parts))
-        
-        return " | ".join(minimal_parts)
+        return f"<CTX>{data_section} | {' '.join(instructions)}</CTX>"
     
     def get_context_prompt_structured(self, include_news: int = 3) -> str:
         """Get structured contextual prompt in JSON-like format.
@@ -973,13 +1075,17 @@ class Contextuals:
         # Create structured format with all information
         import json
         
+        # Get UTC offset for timezone
+        utc_offset = _get_utc_offset(simple_data['timezone'], simple_data['time'])
+        
         context_data = {
             "user": f"{simple_data['username']} ({simple_data['full_name']})",
             "language": simple_data['language'],
-            "location": f"{simple_data['location']['city']}, {simple_data['location']['country']}",
+            "city": simple_data['location']['city'],
+            "country": simple_data['location']['country'],
             "coordinates": f"{simple_data['location']['latitude']:.2f},{simple_data['location']['longitude']:.2f}",
             "time": simple_data['time'][:16],
-            "timezone": simple_data['timezone'],
+            "utc": utc_offset,
             "temperature": f"{simple_data['weather']['temp_c']}°C",
             "humidity": f"{simple_data['weather']['humidity']}%",
             "wind": f"{simple_data['weather']['wind_kph']}km/h {simple_data['weather']['wind_dir'][:3]}",
@@ -1005,17 +1111,19 @@ class Contextuals:
         # Create minified JSON for the prompt
         context_json = json.dumps(context_data, separators=(',', ':'))
         
+        # Create structured format with XML-like tags
         structured_parts = []
-        structured_parts.append(f"CONTEXT_DATA: {context_json}")
+        structured_parts.append("<IMPLICIT_CONTEXT>Shared real-time implicit context: user, location, time, weather, environment and system status.")
+        structured_parts.append(context_json)
         structured_parts.append("")
+        
         # Context instructions for STRUCTURED
-        instructions = ["Shared implicit context: environment, location, time, weather, and system status."]
-        instructions.append("Respond naturally with contextual awareness.")
+        instructions = ["respond naturally with this contextual awareness."]
         instructions.append("Consider system capabilities for technical suggestions.")
         if simple_data['news']:
-            instructions.append("Reference current events when relevant to the user's situation.")
+            instructions.append("Reference current events when relevant; provide URLs for follow-up when helpful.")
         
-        structured_parts.append(f"CONTEXT: {' '.join(instructions)}")
+        structured_parts.append(f"INSTRUCTION : {' '.join(instructions).capitalize()}</IMPLICIT_CONTEXT>")
         
         return "\n".join(structured_parts)
     

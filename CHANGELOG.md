@@ -5,6 +5,36 @@ All notable changes to the Contextuals library will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2025-05-28
+
+### 🚀 Enhanced - Prompt Format Improvements
+
+**Self-Contained Prompt Structure with XML-like Tags**
+- **BREAKING CHANGE**: All prompt variants now use self-contained format with XML-like tags
+- **COMPACT & MINIMAL**: Now use `<CTX>` tags for clear boundaries
+- **DEFAULT & STRUCTURED**: Now use `<IMPLICIT_CONTEXT>` tags with instruction separation
+- **Benefits**: Better LLM parsing, modular design, cleaner composition with other prompts
+
+**Format Examples:**
+- **COMPACT**: `<CTX>Shared implicit context : [data] | [instructions]</CTX>`
+- **DEFAULT/STRUCTURED**: 
+  ```
+  <IMPLICIT_CONTEXT>Shared real-time implicit context: user, location, time, weather, environment and system status.
+  [Data sections]
+  
+  INSTRUCTION : [response instructions]</IMPLICIT_CONTEXT>
+  ```
+
+**Improved Instruction Clarity**
+- Clear separation between contextual data and response instructions
+- Consistent instruction format across all variants
+- Better handling of conditional instructions (e.g., news-related guidance)
+
+### 📝 Documentation
+- Updated README.md with new format examples and benefits
+- Added XML-like tag structure explanation
+- Updated CLI command descriptions to reflect new format characteristics
+
 ## [0.2.0] - 2025-05-27
 
 ### 🐛 Bug Fixes

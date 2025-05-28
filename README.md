@@ -382,9 +382,13 @@ contextuals prompt
 
 # Get different prompt variants
 contextuals prompt --variant structured  # Best overall quality (8.21/10) - RECOMMENDED
+                                         # Uses separate city/country fields, JSON format with <IMPLICIT_CONTEXT> tags
 contextuals prompt --variant default     # Best speed-quality balance (36.35 tok/s)
+                                         # Natural language format with <IMPLICIT_CONTEXT> tags
 contextuals prompt --variant compact     # Most token-efficient (~28 tokens)
+                                         # Ultra-compact format with <CTX> tags
 contextuals prompt --variant minimal     # Ultra-compact (~20 tokens)
+                                         # Extreme efficiency format with <CTX> tags  
 contextuals prompt --variant detailed    # Comprehensive context (~219 tokens)
 ```
 
@@ -460,7 +464,7 @@ def get_news():
 
 ### AI Integration
 
-Contextuals provides optimized prompts specifically designed for LLM system messages:
+Contextuals provides optimized prompts specifically designed for LLM system messages with self-contained XML-like structure:
 
 ```python
 from contextuals import Contextuals
@@ -482,15 +486,30 @@ response = openai.ChatCompletion.create(
 )
 
 # Different prompt variants for different needs
-compact_prompt = context.get_context_prompt_compact()      # Most token-efficient
-minimal_prompt = context.get_context_prompt_minimal()      # Ultra-compact
-structured_prompt = context.get_context_prompt_structured() # JSON-like format
+compact_prompt = context.get_context_prompt_compact()      # Most token-efficient, uses <CTX> tags
+minimal_prompt = context.get_context_prompt_minimal()      # Ultra-compact, uses <CTX> tags  
+structured_prompt = context.get_context_prompt_structured() # JSON format with <IMPLICIT_CONTEXT> tags
 detailed_prompt = context.get_context_prompt_detailed()    # Comprehensive context
 
 # Programmatic access to simple context data
 simple_data = context.get_simple_context()
 simple_json = context.get_simple_context_json(minified=True)
 simple_markdown = context.get_simple_context_markdown()
+```
+
+**New Self-Contained Format Benefits:**
+- **XML-like Tags**: Clear boundaries with `<CTX>` or `<IMPLICIT_CONTEXT>` tags for better LLM parsing
+- **Instruction Separation**: Clear separation between contextual data and response instructions
+- **Modular Design**: Easier to compose with other prompts or extract specific sections
+- **Consistent Structure**: All variants follow a similar self-contained approach
+
+**Sample Format Structure:**
+```
+<IMPLICIT_CONTEXT>Shared real-time implicit context: user, location, time, weather, environment and system status.
+[Contextual data sections]
+
+INSTRUCTION : Respond naturally with this contextual awareness. Consider system capabilities for technical suggestions.
+</IMPLICIT_CONTEXT>
 ```
 
 **Empirical Testing Results:**
@@ -515,6 +534,16 @@ prompt = context.get_context_prompt()  # DEFAULT variant
 ```python
 prompt = context.get_context_prompt_compact()
 ```
+
+**📍 Location Format:**
+- **STRUCTURED**: Uses separate `"city": "Paris"` and `"country": "France"` fields for precise location data
+- **Other variants**: Use combined format like `"Paris, France"` for readability
+
+**🕐 Timezone Format:**
+- **STRUCTURED**: Uses `"utc": "+2"` field with UTC offset format for clarity and efficiency
+- **COMPACT, MINIMAL**: Use compact time+UTC format (`"2025-05-28T15:38+2"`) without spaces for maximum efficiency
+- **DEFAULT**: Uses verbose format with timezone name (`"2025-05-28T15:20:06+02:00 (Europe/Paris)"`)
+- All variants show time in local timezone with appropriate UTC offset indication
 
 **🎯 Recommended Model Combinations (from benchmark testing):**
 - **Premium Quality**: qwen3:30b-a3b-q4_K_M + STRUCTURED (thinking capabilities)
