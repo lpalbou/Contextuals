@@ -382,14 +382,12 @@ contextuals prompt
 
 # Get different prompt variants
 contextuals prompt --variant structured  # Best overall quality (8.21/10) - RECOMMENDED
-                                         # Uses separate city/country fields, JSON format with <IMPLICIT_CONTEXT> tags
+                                         # Uses separate city/country fields, JSON format with <IMPLICIT_CONTEXT> tags (~323 tokens with news)
 contextuals prompt --variant default     # Best speed-quality balance (36.35 tok/s)
-                                         # Natural language format with <IMPLICIT_CONTEXT> tags
-contextuals prompt --variant compact     # Most token-efficient (~28 tokens)
-                                         # Ultra-compact format with <CTX> tags
-contextuals prompt --variant minimal     # Ultra-compact (~20 tokens)
-                                         # Extreme efficiency format with <CTX> tags  
-contextuals prompt --variant detailed    # Comprehensive context (~219 tokens)
+                                         # Natural language format with <IMPLICIT_CONTEXT> tags (~278 tokens with news)
+contextuals prompt --variant compact     # Most token-efficient, uses <CTX> tags (~166 tokens with news)
+contextuals prompt --variant minimal     # Ultra-compact, uses <CTX> tags (~54 tokens with news)  
+contextuals prompt --variant detailed    # Comprehensive context (~389 tokens with news)
 ```
 
 ### Benchmarking Commands
@@ -486,10 +484,10 @@ response = openai.ChatCompletion.create(
 )
 
 # Different prompt variants for different needs
-compact_prompt = context.get_context_prompt_compact()      # Most token-efficient, uses <CTX> tags
-minimal_prompt = context.get_context_prompt_minimal()      # Ultra-compact, uses <CTX> tags  
-structured_prompt = context.get_context_prompt_structured() # JSON format with <IMPLICIT_CONTEXT> tags
-detailed_prompt = context.get_context_prompt_detailed()    # Comprehensive context
+compact_prompt = context.get_context_prompt_compact()      # Most token-efficient, uses <CTX> tags (~166 tokens with news)
+minimal_prompt = context.get_context_prompt_minimal()      # Ultra-compact, uses <CTX> tags (~54 tokens with news)  
+structured_prompt = context.get_context_prompt_structured() # JSON format with <IMPLICIT_CONTEXT> tags (~323 tokens with news)
+detailed_prompt = context.get_context_prompt_detailed()    # Comprehensive context (~389 tokens with news)
 
 # Programmatic access to simple context data
 simple_data = context.get_simple_context()
@@ -512,6 +510,18 @@ INSTRUCTION : Respond naturally with this contextual awareness. Consider system 
 </IMPLICIT_CONTEXT>
 ```
 
+**Updated Token Count Analysis (v0.2.1):**
+
+| Variant     | Without News | With 3 News | Format      | Use Case |
+|-------------|-------------|-------------|-------------|-----------|
+| **MINIMAL** | ~29 tokens  | ~54 tokens  | `<CTX>`     | Ultra-efficient, critical constraints |
+| **COMPACT** | ~92 tokens  | ~166 tokens | `<CTX>`     | Token-efficient, good balance |
+| **DEFAULT** | ~166 tokens | ~278 tokens | `<IMPLICIT_CONTEXT>` | Production standard |
+| **STRUCTURED** | ~198 tokens | ~323 tokens | `<IMPLICIT_CONTEXT>` + JSON | Best quality, API integration |
+| **DETAILED** | ~268 tokens | ~389 tokens | Natural language | Comprehensive context |
+
+*Note: Token estimates based on ~4 characters per token. Actual counts may vary by tokenizer.*
+
 **Empirical Testing Results:**
 Based on comprehensive testing across 8 language models with LLM-as-a-judge evaluation, the prompt variants ranked as follows:
 1. **STRUCTURED** (7.18/10 score) - Best overall quality with JSON-like format
@@ -520,19 +530,24 @@ Based on comprehensive testing across 8 language models with LLM-as-a-judge eval
 
 **Recommendations Based on Empirical Testing:**
 
-**🏆 Best Overall Quality:** Use `STRUCTURED` variant (7.18/10 average score)
+**🏆 Best Overall Quality:** Use `STRUCTURED` variant (7.18/10 average score, ~323 tokens with news)
 ```python
 prompt = context.get_context_prompt_structured()
 ```
 
-**🚀 Best Speed-Quality Balance:** Use `DEFAULT` variant (59.2 tokens/sec with qwen3:30b)
+**🚀 Best Speed-Quality Balance:** Use `DEFAULT` variant (59.2 tokens/sec with qwen3:30b, ~278 tokens with news)
 ```python
 prompt = context.get_context_prompt()  # DEFAULT variant
 ```
 
-**💰 Most Token-Efficient:** Use `COMPACT` variant (~100 tokens, note: speed paradox)
+**💰 Most Token-Efficient:** Use `COMPACT` variant (~166 tokens with news, note: speed paradox)
 ```python
 prompt = context.get_context_prompt_compact()
+```
+
+**⚡ Ultra Token-Efficient:** Use `MINIMAL` variant (~54 tokens with news, extreme efficiency)
+```python
+prompt = context.get_context_prompt_minimal()
 ```
 
 **📍 Location Format:**
@@ -544,6 +559,9 @@ prompt = context.get_context_prompt_compact()
 - **COMPACT, MINIMAL**: Use compact time+UTC format (`"2025-05-28T15:38+2"`) without spaces for maximum efficiency
 - **DEFAULT**: Uses verbose format with timezone name (`"2025-05-28T15:20:06+02:00 (Europe/Paris)"`)
 - All variants show time in local timezone with appropriate UTC offset indication
+
+**⚠️ Important Benchmark Note:**
+*Due to significant format changes between v0.2.0 and v0.2.1 (introduction of XML-like tags), the benchmark results may not accurately reflect current performance. Benchmarks should be re-run to validate performance with the new self-contained prompt formats.*
 
 **🎯 Recommended Model Combinations (from benchmark testing):**
 - **Premium Quality**: qwen3:30b-a3b-q4_K_M + STRUCTURED (thinking capabilities)
@@ -602,11 +620,14 @@ analyze_results()  # Processes comprehensive_results.json
 - Provides empirical recommendations for production use
 
 **Key Findings from 8-Model Benchmark:**
-- **STRUCTURED prompt variant wins** with 7.18/10 average score
+- **STRUCTURED prompt variant wins** with 7.18/10 average score (~323 tokens with news)
 - **qwen3:30b-a3b-q4_K_M** shows superior performance with thinking capabilities
 - **Contextual prompts provide measurable benefits** across all model sizes
-- **Token efficiency matters**: STRUCTURED offers best quality-efficiency balance
+- **Token efficiency matters**: COMPACT offers best token-efficiency balance (~166 tokens with news)
 - **COMPACT variant shows speed paradox**: Slower than expected despite fewer tokens
+
+**⚠️ Benchmark Validity Note:**
+*These benchmark results were conducted with v0.2.0 prompt formats. Due to significant format changes in v0.2.1 (XML-like tags, instruction separation), performance characteristics may differ. Re-benchmarking is recommended for accurate current performance metrics.*
 
 See [BENCHMARK.md](docs/BENCHMARK.md) for comprehensive results and recommendations.
 
