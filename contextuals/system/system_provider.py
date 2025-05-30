@@ -393,16 +393,49 @@ class SystemProvider:
                     total_bytes = int(subprocess.check_output(["sysctl", "-n", "hw.memsize"]).decode().strip())
                     vm_stat = subprocess.check_output(["vm_stat"]).decode().strip()
                     
-                    # Parse vm_stat output
-                    page_size = 4096  # Default page size for macOS
-                    free_pages = int([line for line in vm_stat.split("\n") if "Pages free" in line][0].split(":")[1].strip().replace(".", ""))
-                    free_bytes = free_pages * page_size
+                    # Parse page size with fallback
+                    page_size = 4096  # Default fallback
+                    try:
+                        page_size_lines = [line for line in vm_stat.split("\n") if "page size of" in line]
+                        if page_size_lines:
+                            page_size_line = page_size_lines[0]
+                            page_size_str = page_size_line.split("page size of ")[1].split(" bytes")[0]
+                            page_size = int(page_size_str)
+                    except (IndexError, ValueError):
+                        pass  # Use default page size
+                    
+                    # Parse different types of pages with fallbacks
+                    def safe_parse_pages(vm_stat_output, page_type):
+                        """Safely parse page count from vm_stat output."""
+                        try:
+                            lines = [line for line in vm_stat_output.split("\n") if page_type in line]
+                            if lines:
+                                page_count_str = lines[0].split(":")[1].strip().replace(".", "")
+                                return int(page_count_str)
+                        except (IndexError, ValueError):
+                            pass
+                        return 0
+                    
+                    free_pages = safe_parse_pages(vm_stat, "Pages free")
+                    inactive_pages = safe_parse_pages(vm_stat, "Pages inactive")
+                    speculative_pages = safe_parse_pages(vm_stat, "Pages speculative")
+                    
+                    # Calculate available memory (free + inactive + speculative pages can be reclaimed)
+                    # If we can't get all page types, at least use what we have
+                    available_pages = free_pages + inactive_pages + speculative_pages
+                    
+                    # Fallback: if we got no page info at all, try simpler approach
+                    if available_pages == 0:
+                        # Just use free pages as minimum available memory
+                        available_pages = free_pages
+                    
+                    available_bytes = available_pages * page_size
                     
                     memory_info = {
                         "total_mb": total_bytes // (1024 * 1024),
-                        "free_mb": free_bytes // (1024 * 1024),
-                        "used_mb": (total_bytes - free_bytes) // (1024 * 1024),
-                        "usage_percent": ((total_bytes - free_bytes) / total_bytes) * 100
+                        "free_mb": available_bytes // (1024 * 1024),
+                        "used_mb": (total_bytes - available_bytes) // (1024 * 1024),
+                        "usage_percent": ((total_bytes - available_bytes) / total_bytes) * 100
                     }
                 except:
                     pass
@@ -437,7 +470,25 @@ class SystemProvider:
                     }
                 except:
                     pass
-                    
+            
+            # Universal fallback using psutil if available and no memory info was obtained
+            if not memory_info:
+                try:
+                    import psutil
+                    mem = psutil.virtual_memory()
+                    memory_info = {
+                        "total_mb": mem.total // (1024 * 1024),
+                        "free_mb": mem.available // (1024 * 1024),
+                        "used_mb": mem.used // (1024 * 1024),
+                        "usage_percent": mem.percent
+                    }
+                except ImportError:
+                    # psutil not available, leave memory_info empty
+                    pass
+                except Exception:
+                    # Other error with psutil, leave memory_info empty
+                    pass
+            
             machine_data["memory"] = memory_info
             
             # Get disk information

@@ -1,6 +1,6 @@
 """Contextuals - A library for contextual information in AI applications."""
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 from contextuals.core.contextual import Contextuals
 
